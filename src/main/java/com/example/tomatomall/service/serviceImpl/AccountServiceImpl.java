@@ -29,7 +29,7 @@ public class AccountServiceImpl implements AccountService {
     SecurityUtil securityUtil;
 
     @Override
-    public Boolean createUser(AccountVO accountVO) {
+    public String createUser(AccountVO accountVO) {
         Account account = accountRepository.findByUsername(accountVO.getUsername());
         if (account != null) {
             throw  TomatoMailException.userNameAlreadyExist();
@@ -40,7 +40,7 @@ public class AccountServiceImpl implements AccountService {
         accountVO.setPassword(encodedPassword);
 
         accountRepository.save(accountVO.toPO());
-        return true;
+        return "注册成功";
     }
 
     @Override
@@ -64,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Boolean updateUser(AccountVO accountVO) {
+    public String updateUser(AccountVO accountVO) {
         Account account = accountRepository.findByUsername(accountVO.getUsername());
         if (account.getName() != null) {
             account.setName(accountVO.getName());
@@ -87,6 +87,6 @@ public class AccountServiceImpl implements AccountService {
             account.setEmail(accountVO.getEmail());
         }
         accountRepository.save(account);
-        return null;
+        return "更新成功";
     }
 }
