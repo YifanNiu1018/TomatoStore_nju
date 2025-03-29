@@ -2,7 +2,6 @@ package com.example.tomatomall.controller;
 
 import com.example.tomatomall.service.ImageService;
 import com.example.tomatomall.vo.Response;
-import com.example.tomatomall.vo.ResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
