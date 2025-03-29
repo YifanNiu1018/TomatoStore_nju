@@ -1,82 +1,82 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
-import { userRegister } from "@/api/user.ts";
-import { ElMessage, ElForm } from "element-plus";
-import router from "@/router";
+import { ref, reactive, watch } from 'vue'
+import { userRegister } from '@/api/user.ts'
+import { ElMessage, ElForm } from 'element-plus'
+import router from '@/router'
 
-const formRef = ref<InstanceType<typeof ElForm> | null>(null); // 获取 el-form 实例
-const isFormValid = ref(false); // 是否启用注册按钮
+const formRef = ref<InstanceType<typeof ElForm> | null>(null) // 获取 el-form 实例
+const isFormValid = ref(false) // 是否启用注册按钮
 
 const form = reactive({
-  username: "",
-  password: "",
-  name: "",
-  avatar: "",
-  role: "user", // 默认普通用户
-  telephone: "",
-  email: "",
-  location: "",
-});
+  username: '',
+  password: '',
+  name: '',
+  avatar: '',
+  role: 'user', // 默认普通用户
+  telephone: '',
+  email: '',
+  location: ''
+})
 
 // 表单验证规则
 const rules = {
-  username: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
-  password: [{ required: true, message: "密码不能为空", trigger: "blur" }],
-  name: [{ required: true, message: "真实姓名不能为空", trigger: "blur" }],
+  username: [{ required: true, message: '用户名不能为空', trigger: 'blur' }],
+  password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: '真实姓名不能为空', trigger: 'blur' }],
   email: [
-    { type: "email", message: "请输入正确的邮箱地址", trigger: "blur" },
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
   ],
   telephone: [
     {
       pattern: /^1(3[0-9]|4[579]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[189])\d{8}$/,
-      message: "请输入正确的手机号",
-      trigger: "blur",
-    },
-  ],
-};
+      message: '请输入正确的手机号',
+      trigger: 'blur'
+    }
+  ]
+}
 
 // 监听表单变化，实时校验表单是否合法
 watch(form, () => {
   if (formRef.value) {
     formRef.value.validate((valid) => {
-      isFormValid.value = valid;
-    });
+      isFormValid.value = valid
+    })
   }
-});
+})
 
 // 注册用户
 const handleRegister = () => {
-  if (!formRef.value) return;
+  if (!formRef.value) return
 
   formRef.value.validate((valid) => {
     if (valid) {
       userRegister(form)
         .then((res) => {
-          if (res.data.code === "200") {
+          if (res.data.code === '200') {
             ElMessage({
-              message: "注册成功！请登录账号",
-              type: "success",
-              center: true,
-            });
-            router.push({ path: "/login" });
+              message: '注册成功！请登录账号',
+              type: 'success',
+              center: true
+            })
+            router.push({ path: '/login' })
           } else {
             ElMessage({
               message: res.data.msg,
-              type: "error",
-              center: true,
-            });
+              type: 'error',
+              center: true
+            })
           }
         })
         .catch(() => {
           ElMessage({
-            message: "注册失败，请稍后重试",
-            type: "error",
-            center: true,
-          });
-        });
+            message: '注册失败，请稍后重试',
+            type: 'error',
+            center: true
+          })
+        })
     }
-  });
-};
+  })
+}
 </script>
 
 <template>
