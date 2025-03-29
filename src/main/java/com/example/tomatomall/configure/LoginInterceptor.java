@@ -22,7 +22,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             request.getSession().setAttribute("currentUser",tokenUtil.getUser(token));
             return true;
         }else {
-            throw TomatoMailException.loginError();
+            throw TomatoMailException.notLogin();
         }
     }
 

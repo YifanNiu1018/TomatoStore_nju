@@ -20,11 +20,10 @@ public class Account {
     @Column(name = "id")
     private Integer id;
 
-    @NotBlank
+    @Basic
     @Column(name = "user_name", unique = true)
     private String username;
 
-    @NotBlank
     @Basic
     @Column(name = "name")
     private String name;
@@ -33,7 +32,6 @@ public class Account {
     @Column(name = "telephone")
     private String telephone;
 
-    @NotBlank
     @Basic
     @Column(name = "password")
     private String password;
@@ -42,7 +40,6 @@ public class Account {
     @Column(name = "avatar")
     private String avatar;
 
-    @NotBlank
     @Basic
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
