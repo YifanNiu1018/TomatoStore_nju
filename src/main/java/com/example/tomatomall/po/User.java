@@ -1,19 +1,19 @@
 package com.example.tomatomall.po;
 
 import com.example.tomatomall.enums.RoleEnum;
-import com.example.tomatomall.vo.AccountVO;
+import com.example.tomatomall.vo.UserVO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-public class Account {
+@Table(name = "users")
+public class User {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -53,17 +53,17 @@ public class Account {
     @Column(name = "location")
     private String location;
 
-    public AccountVO toVO() {
-        AccountVO accountVO = new AccountVO();
-        accountVO.setId(this.id);
-        accountVO.setUsername(this.username);
-        accountVO.setName(this.name);
-        accountVO.setAvatar(this.avatar);
-        accountVO.setTelephone(this.telephone);
-        accountVO.setPassword(this.password);
-        accountVO.setLocation(this.location);
-        accountVO.setRole(this.role);
-        accountVO.setEmail(this.email);
-        return accountVO;
+    public UserVO toVO() {
+        UserVO userVO = new UserVO();
+        userVO.setId(this.id);
+        userVO.setUsername(this.username);
+        userVO.setName(this.name);
+        userVO.setAvatar(this.avatar);
+        userVO.setTelephone(this.telephone);
+        userVO.setPassword(this.password);
+        userVO.setLocation(this.location);
+        userVO.setRole(this.role);
+        userVO.setEmail(this.email);
+        return userVO;
     }
 }

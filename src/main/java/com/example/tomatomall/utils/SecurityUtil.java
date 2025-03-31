@@ -1,6 +1,6 @@
 package com.example.tomatomall.utils;
 
-import com.example.tomatomall.po.Account;
+import com.example.tomatomall.po.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ public class SecurityUtil {
     @Autowired
     HttpServletRequest httpServletRequest;
 
-    public Account getCurrentUser(){
-        return (Account) httpServletRequest.getSession().getAttribute("currentUser");
+    public User getCurrentUser(){
+        return (User) httpServletRequest.getSession().getAttribute("currentUser");
     }
 }
