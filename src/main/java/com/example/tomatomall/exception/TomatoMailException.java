@@ -16,11 +16,8 @@ public class TomatoMailException extends RuntimeException {
   public static TomatoMailException fileUploadFail() {return new TomatoMailException("图片上传失败");
   }
 
-<<<<<<< HEAD
   public static TomatoMailException productNotExist() {
-    return new TomatoMailException("未找到商品");
-=======
+    return new TomatoMailException("未找到商品");}
   public static TomatoMailException loginError() {return new TomatoMailException("密码错误");
->>>>>>> 4788d523c21cc75d7c3a554aaff5fc73680f6d09
   }
 }
