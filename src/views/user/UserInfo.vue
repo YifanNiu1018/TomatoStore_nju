@@ -24,7 +24,7 @@ const user = reactive({
 const fetchUserInfo = async () => {
   try {
     const res = await userInfo(currentUsername);
-    res.data.data.role = parseRole(res.data.data.role);
+    console.log(res);
     Object.assign(user, res.data.data);
   } catch (error) {
     ElMessage.error('获取用户信息失败');
@@ -80,9 +80,7 @@ const updateInfo = async () => {
     const res = await userInfoUpdate({
       avatar: user.avatar,
       username: user.username,
-      password: null,
       name: user.name,
-      role: user.role,
       telephone: user.telephone,
       email: user.email,
       location: user.location,
@@ -143,7 +141,7 @@ onMounted(fetchUserInfo);
 
           <div class="form-item">
             <label>身份</label>
-            <ElInput v-model="user.role" class="custom-input" disabled/>
+            <ElInput :value="parseRole(user.role)" class="custom-input" disabled/>
           </div>
 
           <div class="form-item">

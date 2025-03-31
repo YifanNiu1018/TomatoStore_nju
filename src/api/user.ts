@@ -16,6 +16,17 @@ type AllInfo = {
   location: string;
 }
 
+type UpdateInfo = {
+  username?: string,
+  password?: string,
+  name?: string,
+  avatar?: string,
+  role?: string,
+  telephone?: string,
+  email?: string,
+  location?: string,
+}
+
 // 用户登录
 export const userLogin = (loginInfo: LoginInfo) => {
   return axios.post(`/api/accounts/login`, loginInfo, {headers: {'Content-Type': 'application/json'}})
@@ -42,7 +53,7 @@ export const userInfo = (username: String) => {
 }
 
 // 更新用户信息
-export const userInfoUpdate = (updateInfo: AllInfo) => {
+export const userInfoUpdate = (updateInfo: UpdateInfo) => {
   return axios.put(`/api/accounts`, updateInfo, {headers: {'Content-Type': 'application/json'}})
     .then(res => {
       return res
