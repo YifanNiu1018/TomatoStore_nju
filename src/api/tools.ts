@@ -7,5 +7,7 @@ export const uploadImage = (file: File) => {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
+  }).then(res => {
+    return res;
   });
 };

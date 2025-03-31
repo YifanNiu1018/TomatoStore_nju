@@ -2,7 +2,9 @@
 import { reactive, onMounted, ref } from 'vue'
 import { ElMessage } from "element-plus";
 import { userInfo, userInfoUpdate } from '@/api/user.js';
-import { uploadImage } from '@/api/tools.js'
+import { uploadImage } from '@/api/tools.js';
+import { parseRole} from '@/utils/index.js';
+import router from '@/router';
 
 const currentUsername = sessionStorage.getItem('username') || '';
 const selectedFile = ref(null); // 新增：存储用户选择的文件对象
@@ -11,9 +13,9 @@ const user = reactive({
   avatar: "",
   username: "",
   password: "",
-  realName: "",
-  identity: "",
-  phone: "",
+  name: "",
+  role: "",
+  telephone: "",
   email: "",
   location: "",
 });
@@ -22,7 +24,8 @@ const user = reactive({
 const fetchUserInfo = async () => {
   try {
     const res = await userInfo(currentUsername);
-    Object.assign(user, res.data);
+    res.data.data.role = parseRole(res.data.data.role);
+    Object.assign(user, res.data.data);
   } catch (error) {
     ElMessage.error('获取用户信息失败');
     console.error('Error fetching user info:', error);
@@ -57,7 +60,7 @@ const uploadAvatar = async () => {
 
   try {
     const res = await uploadImage(selectedFile.value);
-    user.avatar = res.data.result; // 更新为服务器返回的URL
+    user.avatar = res.data.data; // 更新为服务器返回的URL
     selectedFile.value = null; // 清空已上传的文件
 
     ElMessage.success('头像上传成功');
@@ -74,7 +77,16 @@ const updateInfo = async () => {
     await uploadAvatar();
 
     // 2. 更新用户信息
-    const res = await userInfoUpdate(user);
+    const res = await userInfoUpdate({
+      avatar: user.avatar,
+      username: user.username,
+      password: null,
+      name: user.name,
+      role: user.role,
+      telephone: user.telephone,
+      email: user.email,
+      location: user.location,
+    });
 
     if (res.data.code === '200') {
       ElMessage.success('信息更新成功');
@@ -121,27 +133,22 @@ onMounted(fetchUserInfo);
         <div class="form">
           <div class="form-item">
             <label>用户名</label>
-            <ElInput v-model="user.username" class="custom-input" />
-          </div>
-
-          <div class="form-item">
-            <label>密码</label>
-            <ElInput v-model="user.password" type="password" show-password class="custom-input" />
+            <ElInput v-model="user.username" class="custom-input" disabled/>
           </div>
 
           <div class="form-item">
             <label>真实姓名</label>
-            <ElInput v-model="user.realName" class="custom-input" />
+            <ElInput v-model="user.name" class="custom-input" />
           </div>
 
           <div class="form-item">
             <label>身份</label>
-            <ElInput v-model="user.identity" class="custom-input" disabled />
+            <ElInput v-model="user.role" class="custom-input" disabled/>
           </div>
 
           <div class="form-item">
             <label>手机号</label>
-            <ElInput v-model="user.phone" class="custom-input" />
+            <ElInput v-model="user.telephone" class="custom-input" />
           </div>
 
           <div class="form-item">

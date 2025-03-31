@@ -12,7 +12,7 @@ const form = reactive({
   password: '',
   name: '',
   avatar: '',
-  role: 'user', // 默认普通用户
+  role: '',
   telephone: '',
   email: '',
   location: ''
@@ -104,7 +104,7 @@ const handleRegister = () => {
 
         <el-form-item label="身份">
           <el-select v-model="form.role">
-            <el-option label="普通用户" value="user" />
+            <el-option label="普通用户" value="customer" />
             <el-option label="管理员" value="admin" />
           </el-select>
         </el-form-item>

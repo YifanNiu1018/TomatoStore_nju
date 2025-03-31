@@ -38,7 +38,9 @@ const handleLogin = () => {
               type: "success",
               center: true,
             });
-            router.push({ path: "/board" }); // 登录成功跳转到看板页面
+            sessionStorage.setItem("username", form.username);
+            sessionStorage.setItem("token", res.data.data);
+            router.push({ path: "/UserInfo" }); // 登录成功跳转到看板页面
           } else {
             ElMessage({
               message: res.data.msg,

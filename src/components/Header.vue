@@ -27,11 +27,11 @@ const handleCommand = (command) => {
       <a href="#">待定4</a>
     </nav>
     <div class="right">
-      <ElInput placeholder="书名/作者" class="search" size="medium" />
+      <ElInput placeholder="书名/作者" class="search" size="small" />
       <ElDropdown @command="handleCommand">
         <ElAvatar
-          size="medium"
-          src="https://i.pravatar.cc/40"
+          size=""
+          src=""
           class="avatar"
         />
         <template #dropdown>
