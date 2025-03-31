@@ -64,24 +64,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public String updateUser(UserVO userVO) {
         User user = userRepository.findByUsername(userVO.getUsername());
-        if (user.getName() != null) {
+        if (userVO.getName() != null) {
             user.setName(userVO.getName());
         }
-        if (user.getPassword() != null) {
+        if (userVO.getPassword() != null) {
             String rawPassword = userVO.getPassword();
             String encodedPassword = passwordEncoder.encode(rawPassword);
             user.setPassword(encodedPassword);
         }
-        if (user.getAvatar() != null) {
+        if (userVO.getAvatar() != null) {
             user.setAvatar(userVO.getAvatar());
         }
-        if (user.getTelephone() != null) {
+        if (userVO.getTelephone() != null) {
             user.setTelephone(userVO.getTelephone());
         }
-        if (user.getLocation() != null) {
+        if (userVO.getLocation() != null) {
             user.setLocation(userVO.getLocation());
         }
-        if (user.getEmail() != null) {
+        if (userVO.getEmail() != null) {
             user.setEmail(userVO.getEmail());
         }
         userRepository.save(user);
