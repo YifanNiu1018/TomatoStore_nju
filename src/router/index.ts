@@ -29,7 +29,7 @@ const router = createRouter({
     },
     {
       path: '/home',
-      redirect: '/UserInfo',
+      redirect: '/productlist',
       component: Home,
       children: [
         {
@@ -38,6 +38,30 @@ const router = createRouter({
           component: UserInfo,
           meta: {title: '个人信息'},
         },
+        {
+          path: '/productlist',
+          name: 'productlist',
+          component: () => import('@/views/products/ProductList.vue'),
+          meta: {title: '番茄商城喵~'}
+        },
+        {
+          path: '/product-create',
+          name: 'CreateProduct',
+          component: () => import('@/views/products/CreateProduct.vue'),
+          meta: { title: '创建商品ing...' }
+        },
+        {
+          path: '/productlist/:id',
+          name: 'ProductDetail',
+          component: () => import('@/views/products/ProductDetail.vue'),
+          meta: {title: '商品详情'}
+        },
+        {
+          path: '/productlist/:id/update',
+          name: 'ProductUpdate',
+          component: () => import('@/views/products/ProductUpdate.vue'),
+          meta: { title: '更新商品信息ing...' }
+        }
       ]
     }
     // 可以继续添加其他路由...

@@ -9,22 +9,28 @@ const handleCommand = (command) => {
     router.push("/userInfo"); // 跳转到个人设置页面
   } else if (command === "logout") {
     console.log("执行退出逻辑");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("username");
+    router.push("/login");
     // 这里可以添加退出登录的逻辑，比如清除token等
   }
 };
 </script>
 
 <template>
+  <div class="header-space">
+
+  </div>
   <div class="header">
     <div class="logo">番茄书店</div>
     <nav class="nav">
       <a href="#">发现好书</a>
       <a href="#">我的电子书</a>
-      <a href="#">番茄商城</a>
+      <a href="/productlist">番茄商城</a>
       <a href="#">待定1</a>
       <a href="#">待定2</a>
       <a href="#">待定3</a>
-      <a href="#">待定4</a>
+      <a href="/product-create">创建商品</a>
     </nav>
     <div class="right">
       <ElInput placeholder="书名/作者" class="search" size="small" />
@@ -46,13 +52,24 @@ const handleCommand = (command) => {
 </template>
 
 <style scoped>
+.header-space {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #111;
+  margin: 20px 20px;
+  color: white;
+}
 .header {
+  position: fixed;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: #111;
   padding: 10px 20px;
   color: white;
+  width: 98.5%;
+  z-index: 9;
 }
 
 .logo {
