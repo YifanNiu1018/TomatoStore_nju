@@ -12,11 +12,13 @@ import com.example.tomatomall.utils.SecurityUtil;
 import com.example.tomatomall.vo.CartListVO;
 import com.example.tomatomall.vo.CartVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class CartServiceImpl implements CartService {
 
     @Autowired
@@ -46,19 +48,20 @@ public class CartServiceImpl implements CartService {
         }
 
         //检查是否已经在购物车中
-        if (cartRepository.findByProductIdAndUserId(productId, userId) != null) {
-            Cart cart = cartRepository.findByProductIdAndUserId(productId, userId);
-            cart.setQuantity(cart.getQuantity() + count);
-            cartRepository.save(cart);
+        Cart existingCart = cartRepository.findByProductIdAndUserId(productId, userId);
+        if (existingCart != null) {
+            existingCart.setQuantity(existingCart.getQuantity() + count);
+            cartRepository.save(existingCart);
+            return convertToCartVO(existingCart, product);
         }
 
         //如果不在购物车中，创建新的购物车项
-        Cart newcart = new Cart();
-        newcart.setProductid(productId);
-        newcart.setUserid(userId);
-        newcart.setQuantity(count);
-        cartRepository.save(newcart);
-        return convertToCartVO(newcart, product);
+        Cart newCart = new Cart();
+        newCart.setProductid(productId);
+        newCart.setUserid(userId);
+        newCart.setQuantity(count);
+        cartRepository.save(newCart);
+        return convertToCartVO(newCart, product);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class CartServiceImpl implements CartService {
             throw TomatoMailException.cartItemNotBelongToUser();
         }
         cartRepository.delete(cart);
-        return null;
+        return "删除成功";
     }
 
     @Override
