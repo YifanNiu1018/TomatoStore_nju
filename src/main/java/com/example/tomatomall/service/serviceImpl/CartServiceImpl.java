@@ -48,7 +48,7 @@ public class CartServiceImpl implements CartService {
         }
 
         //检查是否已经在购物车中
-        Cart existingCart = cartRepository.findByProductIdAndUserId(productId, userId);
+        Cart existingCart = cartRepository.findByProductidAndUserid(productId, userId);
         if (existingCart != null) {
             existingCart.setQuantity(existingCart.getQuantity() + count);
             cartRepository.save(existingCart);
@@ -101,7 +101,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartListVO getCart() {
         Integer userId = securityUtil.getCurrentUser().getId();
-        List<Cart> cartList = cartRepository.findByUserId(userId);
+        List<Cart> cartList = cartRepository.findByUserid(userId);
         if (cartList == null || cartList.isEmpty()) {
             return null;
         }
