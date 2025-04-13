@@ -3,14 +3,16 @@ package com.example.tomatomall.controller;
 import com.example.tomatomall.service.CartService;
 import com.example.tomatomall.vo.CartListVO;
 import com.example.tomatomall.vo.CartVO;
+import com.example.tomatomall.vo.OrderVO;
 import com.example.tomatomall.vo.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
-@RequestMapping("/api/carts")
+@RequestMapping("/api/cart")
 public class CartController {
 
     @Autowired
@@ -38,6 +40,12 @@ public class CartController {
     public Response<CartListVO> getCart() {
         CartListVO cartList = cartService.getCart();
         return Response.buildSuccess(cartList);
+    }
+
+    @PatchMapping("/checkout")
+    public Response<OrderVO> getOrder(@RequestParam List<Integer> cartItemIds,@RequestParam ) {
+
+
     }
 
 

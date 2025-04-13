@@ -39,3 +39,31 @@ CREATE TABLE stockpiles
     frozen     INT NOT NULL COMMENT '商品库存冻结数，指不可卖的商品数量，不允许为空',
     FOREIGN KEY (product_id) REFERENCES products (id)
 ) COMMENT ='商品库存表';
+
+CREATE TABLE carts (
+    cart_item_id INT AUTO_INCREMENT PRIMARY KEY COMMENT '购物车商品id', 
+    user_id INT NOT NULL COMMENT '用户id，关联用户表',
+    product_id INT NOT NULL COMMENT '商品id，关联商品表',
+    quantity INT NOT NULL DEFAULT 1 COMMENT '商品数量，默认为1',
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+) COMMENT='购物车商品表';
+
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY COMMENT '订单ID',
+    user_id INT NOT NULL COMMENT '用户ID',
+    total_amount DECIMAL(10,2) NOT NULL COMMENT '订单总金额',
+    payment_method VARCHAR(50) NOT NULL COMMENT '支付方式',
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT '订单支付状态（PENDING, SUCCESS, FAILED, TIMEOUT）',
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '订单创建时间',
+    FOREIGN KEY (user_id) REFERENCES users(id)
+) COMMENT='订单表';
+
+CREATE TABLE carts_orders_relation (
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',
+    cart_item_id INT NOT NULL COMMENT '关联购物车商品ID',
+    order_id INT NOT NULL COMMENT '关联订单ID',
+    FOREIGN KEY (cart_item_id) REFERENCES carts(cart_item_id) ,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+) COMMENT='购物车商品与订单关联表';
+

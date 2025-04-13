@@ -132,7 +132,7 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
-        // 初始化库存为0（如果未提供）
+        // 初始化库存为0
         Stockpile stockpile = new Stockpile();
         stockpile.setProduct(product);
         stockpile.setAmount(0);
