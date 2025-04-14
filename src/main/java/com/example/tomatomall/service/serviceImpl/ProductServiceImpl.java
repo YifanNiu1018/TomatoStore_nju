@@ -11,6 +11,7 @@ import com.example.tomatomall.service.ProductService;
 import com.example.tomatomall.vo.ProductVO;
 import com.example.tomatomall.vo.SpecificationVO;
 import com.example.tomatomall.vo.StockpileVO;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,27 +75,7 @@ public class ProductServiceImpl implements ProductService {
     public String updateProduct(ProductVO productVO) {
         Optional<Product> productOptional = productRepository.findById(productVO.getId());
         if (productOptional.isPresent()) {
-            Product product = productOptional.get();
-
-            // 更新产品基本信息
-            if (productVO.getTitle() != null) {
-                product.setTitle(productVO.getTitle());
-            }
-            if (productVO.getPrice() != null) {
-                product.setPrice(productVO.getPrice());
-            }
-            if (productVO.getRate() != null) {
-                product.setRate(productVO.getRate());
-            }
-            if (productVO.getDescription() != null) {
-                product.setDescription(productVO.getDescription());
-            }
-            if (productVO.getCover() != null) {
-                product.setCover(productVO.getCover());
-            }
-            if (productVO.getDetail() != null) {
-                product.setDetail(productVO.getDetail());
-            }
+            final Product product = getProduct(productVO, productOptional);
 
             productRepository.save(product);
 
@@ -115,6 +96,32 @@ public class ProductServiceImpl implements ProductService {
         } else {
             throw TomatoMailException.productNotExist();
         }
+    }
+
+    @NotNull
+    private static Product getProduct(ProductVO productVO, Optional<Product> productOptional) {
+        Product product = productOptional.get();
+
+        // 更新产品基本信息
+        if (productVO.getTitle() != null) {
+            product.setTitle(productVO.getTitle());
+        }
+        if (productVO.getPrice() != null) {
+            product.setPrice(productVO.getPrice());
+        }
+        if (productVO.getRate() != null) {
+            product.setRate(productVO.getRate());
+        }
+        if (productVO.getDescription() != null) {
+            product.setDescription(productVO.getDescription());
+        }
+        if (productVO.getCover() != null) {
+            product.setCover(productVO.getCover());
+        }
+        if (productVO.getDetail() != null) {
+            product.setDetail(productVO.getDetail());
+        }
+        return product;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.example.tomatomall.controller;
 
-import com.example.tomatomall.exception.TomatoMailException;
 import com.example.tomatomall.service.ProductService;
 import com.example.tomatomall.vo.ProductVO;
 import com.example.tomatomall.vo.Response;

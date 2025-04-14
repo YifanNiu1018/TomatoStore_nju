@@ -28,12 +28,13 @@ public class OrderController {
     private String ALIPAY_PUBLIC_KEY;
 
     @PostMapping("/{orderId}/pay")
-    public Response<OrderItem> getProductById(@PathVariable Integer orderId) {
+    public Response<OrderItem> getProductById(@PathVariable Integer orderId) throws Exception {
         OrderVO orderVO = orderService.getOrderDetails(orderId);
         OrderItem orderItem = new OrderItem();
         orderItem.setOrderId(orderVO.getOrderId());
         orderItem.setTotalAmount(orderVO.getTotalAmount());
         orderItem.setPaymentMethod(orderVO.getPaymentMethod());
+        orderItem.setPaymentForm(orderService.generateAlipayForm(orderId));
         return Response.buildSuccess(orderItem);
     }
 
@@ -61,6 +62,8 @@ public class OrderController {
             orderService.updateOrderStatus(Integer.parseInt(orderId), amount);
 
             // 扣减库存（建议加锁或乐观锁）
+            // TODO
+            // 使用ProductService中的adjustStockpile函数来调整,可能需要重新实现这函数,逻辑可能有误
             //inventoryService.reduceStock(orderId);
         }
 
