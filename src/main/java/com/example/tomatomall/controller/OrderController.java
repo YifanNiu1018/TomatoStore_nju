@@ -24,7 +24,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @Value("${alipay.public.key}")
+    @Value("${alipay.alipayPublicKey}")
     private String ALIPAY_PUBLIC_KEY;
 
     @PostMapping("/{orderId}/pay")
