@@ -134,7 +134,7 @@ public class OrderServiceImpl implements OrderService {
                 throw TomatoMailException.productNotExist();
             }
             Stockpile stockpile = stockpileRepository.findByProductId(product.getId());
-            stockpile.setFrozen(1);
+            stockpile.setFrozen(stockpile.getFrozen() + cart.getQuantity());
             stockpileRepository.save(stockpile);
         }
 
