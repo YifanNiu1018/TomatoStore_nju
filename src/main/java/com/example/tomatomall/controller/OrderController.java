@@ -16,6 +16,7 @@ import com.example.tomatomall.service.OrderService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -82,7 +83,7 @@ public class OrderController {
     private static class OrderItem {
         private String paymentForm;
         private int orderId;
-        private int totalAmount;
+        private BigDecimal totalAmount;
         private String paymentMethod;
     }
 }
