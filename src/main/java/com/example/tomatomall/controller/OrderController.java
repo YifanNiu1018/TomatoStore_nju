@@ -2,6 +2,7 @@ package com.example.tomatomall.controller;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.example.tomatomall.service.StockService;
 import com.example.tomatomall.vo.OrderVO;
 import com.example.tomatomall.vo.Response;
 import lombok.Getter;
@@ -26,6 +27,9 @@ public class OrderController {
 
     @Value("${alipay.alipayPublicKey}")
     private String ALIPAY_PUBLIC_KEY;
+
+    @Autowired
+    private StockService stockService;;
 
     @PostMapping("/{orderId}/pay")
     public Response<OrderItem> getProductById(@PathVariable Integer orderId) throws Exception {
@@ -65,6 +69,7 @@ public class OrderController {
             // TODO
             // 使用ProductService中的adjustStockpile函数来调整,可能需要重新实现这函数,逻辑可能有误
             //inventoryService.reduceStock(orderId);
+            stockService.reduceStock(Integer.valueOf(orderId));
         }
 
         // 4. 必须返回纯文本的 "success"（支付宝要求）

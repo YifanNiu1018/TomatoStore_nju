@@ -3,9 +3,11 @@ package com.example.tomatomall.service;
 
 import com.example.tomatomall.vo.OrderVO;
 
+import java.util.List;
+
 
 public interface OrderService {
-    //OrderVO createOrder(Integer userId, List<Integer> cartItemIds, Integer totalAmount, String paymentMethod);
+    OrderVO createOrder(Integer userId, List<Integer> cartItemIds, String paymentMethod);
 
     //List<OrderVO> getUserOrders(Integer userId);
 

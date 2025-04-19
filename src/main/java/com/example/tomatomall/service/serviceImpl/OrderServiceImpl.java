@@ -5,20 +5,44 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.example.tomatomall.configure.AliPayConfig;
-import com.example.tomatomall.po.Order;
-import com.example.tomatomall.repository.OrderRepository;
+import com.example.tomatomall.exception.TomatoMailException;
+import com.example.tomatomall.po.*;
+import com.example.tomatomall.repository.*;
 import com.example.tomatomall.service.OrderService;
+import com.example.tomatomall.vo.CartVO;
 import com.example.tomatomall.vo.OrderVO;
+import org.bouncycastle.jcajce.provider.asymmetric.rsa.CipherSpi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private StockpileRepository stockpileRepository;
+
+    @Autowired
+    private CORRepository corRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Resource
     AliPayConfig aliPayConfig;
@@ -58,6 +82,66 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }*/
 
+    @Override
+    public OrderVO createOrder(Integer userId, List<Integer> cartItemIds, String paymentMethod) {
+        List<Cart> carts = cartItemIds.stream()
+                .map(cartItemId -> cartRepository.findByCartidAndUserid(cartItemId, userId))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        //检查库存
+        for (Cart cart : carts) {
+            Product product = productRepository.findById(cart.getProductid()).orElse(null);
+            if (product == null) {
+                throw TomatoMailException.productNotExist();
+            }
+            Stockpile stockpile = stockpileRepository.findByProductId(product.getId());
+            if (stockpile.getAmount() < cart.getQuantity()) {
+                throw TomatoMailException.stockpileNotEnough();
+            }
+        }
+
+        //计算总金额
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        for (Cart cart : carts) {
+            Product product = productRepository.findById(cart.getProductid()).orElse(null);
+            if (product != null) {
+                totalAmount = totalAmount.add(product.getPrice().multiply(new BigDecimal(cart.getQuantity())));
+            }
+        }
+
+        //创建订单
+        Order order = new Order();
+        order.setUserId(userId);
+        order.setTotalAmount(totalAmount);
+        order.setPaymentMethod(paymentMethod);
+        order.setCreateTime(LocalDateTime.now());
+        order.setStatus("待支付");
+        Order savedOrder = orderRepository.save(order);
+        orderRepository.save(order);
+        //保存订单和购物车的关系
+        for (Cart cart : carts) {
+            COR cor = new COR();
+            cor.setCartItemId(cart.getCartitemid());
+            cor.setOrderId(savedOrder.getOrderId());
+            corRepository.save(cor);
+        }
+
+        //锁库存
+        for (Cart cart : carts) {
+            Product product = productRepository.findById(cart.getProductid()).orElse(null);
+            if (product == null) {
+                throw TomatoMailException.productNotExist();
+            }
+            Stockpile stockpile = stockpileRepository.findByProductId(product.getId());
+            stockpile.setFrozen(1);
+            stockpileRepository.save(stockpile);
+        }
+
+        return ConvertToOrderVO(savedOrder);
+
+    }
+
     public void updateOrderStatus(Integer orderId, String status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -89,5 +173,16 @@ public class OrderServiceImpl implements OrderService {
         } catch (AlipayApiException e) {
             throw new Exception("Failed to generate Alipay form: " + e.getMessage());
         }
+    }
+
+    private OrderVO ConvertToOrderVO(Order order) {
+        OrderVO orderVO = new OrderVO();
+        orderVO.setOrderId(order.getOrderId());
+        orderVO.setUserName(userRepository.findById(order.getUserId()).get().getUsername());
+        orderVO.setTotalAmount(order.getTotalAmount());
+        orderVO.setPaymentMethod(order.getPaymentMethod());
+        orderVO.setCreateTime(order.getCreateTime());
+        orderVO.setStatus(order.getStatus());
+        return orderVO;
     }
 }

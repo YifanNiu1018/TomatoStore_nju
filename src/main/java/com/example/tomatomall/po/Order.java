@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Order {
     private Integer userId;
 
     @Column(name = "total_amount", nullable = false)
-    private Integer totalAmount;
+    private BigDecimal totalAmount;
 
     @Column(name = "payment_method", nullable = false)
     private String paymentMethod;

@@ -5,6 +5,7 @@ import com.example.tomatomall.po.Product;
 import com.example.tomatomall.repository.CORRepository;
 import com.example.tomatomall.service.CartService;
 import com.example.tomatomall.service.ProductService;
+import com.example.tomatomall.utils.SecurityUtil;
 import com.example.tomatomall.vo.CartListVO;
 import com.example.tomatomall.vo.CartVO;
 import com.example.tomatomall.vo.OrderVO;
@@ -23,8 +24,11 @@ public class CartController {
     @Autowired
     CartService cartService;
 
-    /*@Autowired
-    ProductService productService;*/
+    @Autowired
+    ProductService productService;
+
+    @Autowired
+    SecurityUtil securityUtil;
 
     @PostMapping
     public Response<CartVO> addToCart(@RequestBody CartVO cartVO) {
@@ -52,10 +56,7 @@ public class CartController {
 
     @PatchMapping("/checkout")
     public Response<OrderVO> getOrder(@RequestParam List<Integer> cartItemIds, @RequestParam String paymentMethod ) {
-        for(Integer cartItemId : cartItemIds) {
-            // TODO
-            //查找所有属于同样类型的商品,使用StockpileVO加锁,生成OrderVO
-        }
+
         return Response.buildSuccess(new OrderVO());
     }
 }
