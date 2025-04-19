@@ -1,9 +1,8 @@
-<!-- src/views/product/ProductDetailView.vue -->
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import {ref, onMounted, computed} from 'vue'
 import { useRoute } from 'vue-router'
-import { ElMessage, ElCard, ElTag, ElRate } from 'element-plus'
-import { deleteProduct, type ProductVO, type StockpileVO } from '@/api/product'
+import { ElMessage, ElCard, ElTag, ElRate, ElButton, ElInputNumber } from 'element-plus'
+import { deleteProduct, type ProductVO, type StockpileVO, addToCart } from '@/api/product'
 import { getProductById, getStockpile } from '@/api/product'
 import router from "@/router";
 
@@ -13,6 +12,11 @@ const product = ref<ProductVO>({} as ProductVO)
 const stockpile = ref<StockpileVO>({} as StockpileVO)
 const loading = ref(true)
 const role = 'admin'
+const quantity = ref(1) // 购物车数量
+const maxQuantity = computed(() => {
+  const available = (stockpile.value.amount || 0) - (stockpile.value.frozen || 0)
+  return Math.max(available, 1) // 确保至少为1
+})
 
 const fetchProduct = async () => {
   try {
@@ -27,8 +31,25 @@ const fetchProduct = async () => {
   }
 }
 
+const handleAddToCart = async () => {
+  console.log("productid: " + productId.value);
+  try {
+    const available = (stockpile.value.amount || 0) - (stockpile.value.frozen || 0)
+    if (quantity.value > available) {
+      ElMessage.warning(`库存不足，当前可售数量为 ${available}`)
+      return
+    }
+
+    await addToCart(productId.value, quantity.value)
+    ElMessage.success('商品已成功加入购物车')
+  } catch (error) {
+    ElMessage.error('加入购物车失败')
+    console.error('Add to cart error:', error)
+  }
+}
+
 onMounted(() => {
-  fetchProduct()
+  fetchProduct();
 })
 
 const handleDelete = async () => {
@@ -40,7 +61,6 @@ const handleDelete = async () => {
     console.error('Delete ERROR: ', error);
   }
 }
-
 </script>
 
 <template>
@@ -77,6 +97,23 @@ const handleDelete = async () => {
               <span class="label">可售数量：</span>
               <span class="value">{{ (stockpile.amount || 0) - (stockpile.frozen || 0) }}</span>
             </div>
+          </div>
+
+          <!-- 购物车操作区-->
+          <div class="cart-operations">
+            <ElInputNumber
+                v-model="quantity"
+                :min="1"
+                :max="maxQuantity"
+                class="quantity-input"
+            />
+            <ElButton
+                type="warning"
+                @click="handleAddToCart"
+                class="add-to-cart-btn"
+            >
+              加入购物车
+            </ElButton>
           </div>
         </div>
         <div v-if="role === 'admin'" class="admin-btns">
@@ -123,6 +160,7 @@ const handleDelete = async () => {
 <style scoped lang="scss">
 .product-detail-container {
   background: url("@/assets/bookShelve.jpg") no-repeat fixed center center;
+  background-size: cover;
   padding: 2rem;
   min-height: 100vh;
 }
@@ -283,5 +321,51 @@ const handleDelete = async () => {
 }
 .delete-btn:hover {
   background: rgba(220, 50, 0, 0.5);
+}
+.cart-operations {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  .quantity-input {
+    width: 120px;
+
+    :deep(.el-input__inner) {
+      background: rgba(255, 255, 255, 0.1);
+      color: #333; /* 修改字体颜色为深色 */
+      border-color: #555;
+    }
+
+    /* 调整增减按钮样式 */
+    :deep(.el-input-number__decrease),
+    :deep(.el-input-number__increase) {
+      background: rgba(255, 215, 0, 0.3);
+      color: #333;
+      border-color: #555;
+
+      &:hover {
+        color: #000;
+      }
+    }
+
+    /* 调整禁用状态样式 */
+    :deep(.is-disabled) {
+      opacity: 0.7;
+    }
+  }
+
+  .add-to-cart-btn {
+    background: rgba(255, 215, 0, 0.7);
+    border: none;
+    color: #333;
+    font-weight: bold;
+    padding: 0 2rem;
+    height: 40px;
+
+    &:hover {
+      background: rgba(255, 215, 0, 0.5);
+    }
+  }
 }
 </style>

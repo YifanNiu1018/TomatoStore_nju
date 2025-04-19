@@ -75,3 +75,10 @@ export const updateStockpile = (productId: number, stockpile: StockpileVO) => {
     return res;
   })
 }
+
+export const addToCart = (productId: number, quantity: number) => {
+  return axios.post('/api/cart', {
+    productid: productId,  // 改为全小写，匹配后端字段
+    quantity: quantity
+  });
+};

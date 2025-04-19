@@ -5,6 +5,7 @@ import Register from '@/views/user/Register.vue'
 import Login from '@/views/user/Login.vue'
 import Home from '@/views/Home.vue'
 import UserInfo from '@/views/user/UserInfo.vue'
+import Cart from "@/views/cart/Cart.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,6 +62,12 @@ const router = createRouter({
           name: 'ProductUpdate',
           component: () => import('@/views/products/ProductUpdate.vue'),
           meta: { title: '更新商品信息ing...' }
+        },
+        {
+          path: '/cart',
+          name: 'cart',
+          component: Cart,
+          meta: {title: '我的购物车'}
         }
       ]
     }

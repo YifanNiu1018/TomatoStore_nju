@@ -77,6 +77,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .product-container {
   background: url("@/assets/bookShelve.jpg") no-repeat fixed center center;
+  background-size: cover;
   padding: 2rem;
   min-height: 100vh;
 }

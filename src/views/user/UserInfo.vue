@@ -176,6 +176,7 @@ onMounted(fetchUserInfo);
   align-items: center;
   min-height: 100vh;
   background: url("@/assets/bookShelve.jpg") no-repeat fixed center center;
+  background-size: cover;
   position: relative;
   padding: 20px;
 }

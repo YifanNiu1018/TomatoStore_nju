@@ -279,6 +279,7 @@ const resetForm = () => {
 <style scoped>
 .product-create-container {
   background: url("@/assets/bookShelve.jpg") no-repeat fixed center center;
+  background-size: cover;
   padding: 2rem;
   min-height: 100vh;
 }

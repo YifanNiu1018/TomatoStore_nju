@@ -27,7 +27,7 @@ const handleCommand = (command) => {
       <a href="#">发现好书</a>
       <a href="#">我的电子书</a>
       <a href="/productlist">番茄商城</a>
-      <a href="#">待定1</a>
+      <a href="/cart">我的购物车</a>
       <a href="#">待定2</a>
       <a href="#">待定3</a>
       <a href="/product-create">创建商品</a>
