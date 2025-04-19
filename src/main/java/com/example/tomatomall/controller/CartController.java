@@ -32,13 +32,13 @@ public class CartController {
         return Response.buildSuccess(cart);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{cartItemId}")
     public Response<String> deleteFromCart(@PathVariable Integer cartItemId) {
         String result = cartService.deleteFromCart(cartItemId);
         return Response.buildSuccess(result);
     }
 
-    @PatchMapping
+    @PatchMapping("/item/{cartItemId}")
     public Response<String> updateCart(@PathVariable Integer cartItemId, @RequestBody CartVO cartVO) {
         String result = cartService.updateCart(cartItemId, cartVO.getQuantity());
         return Response.buildSuccess(result);
