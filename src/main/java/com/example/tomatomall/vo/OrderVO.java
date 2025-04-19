@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,7 +17,8 @@ import java.util.List;
 public class OrderVO {
     private Integer orderId;
     private Integer userId;
-    private Integer totalAmount;
+    private String userName;
+    private BigDecimal totalAmount;
     private String paymentMethod;
     private String status = "PENDING";
     private LocalDateTime createTime;
