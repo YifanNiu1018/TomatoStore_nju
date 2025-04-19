@@ -4,6 +4,7 @@ import com.example.tomatomall.po.COR;
 import com.example.tomatomall.po.Product;
 import com.example.tomatomall.repository.CORRepository;
 import com.example.tomatomall.service.CartService;
+import com.example.tomatomall.service.OrderService;
 import com.example.tomatomall.service.ProductService;
 import com.example.tomatomall.utils.SecurityUtil;
 import com.example.tomatomall.vo.CartListVO;
@@ -29,6 +30,9 @@ public class CartController {
 
     @Autowired
     SecurityUtil securityUtil;
+
+    @Autowired
+    OrderService orderService;
 
     @PostMapping
     public Response<CartVO> addToCart(@RequestBody CartVO cartVO) {
@@ -56,7 +60,7 @@ public class CartController {
 
     @PatchMapping("/checkout")
     public Response<OrderVO> getOrder(@RequestParam List<Integer> cartItemIds, @RequestParam String paymentMethod ) {
-
-        return Response.buildSuccess(new OrderVO());
+        OrderVO order = orderService.createOrder(securityUtil.getCurrentUser().getId(), cartItemIds, paymentMethod);
+        return Response.buildSuccess(order);
     }
 }
