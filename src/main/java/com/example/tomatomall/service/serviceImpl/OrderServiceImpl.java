@@ -116,7 +116,7 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(totalAmount);
         order.setPaymentMethod(paymentMethod);
         order.setCreateTime(LocalDateTime.now());
-        order.setStatus("待支付");
+        order.setStatus("PENDING");
         Order savedOrder = orderRepository.save(order);
         orderRepository.save(order);
         //保存订单和购物车的关系
@@ -142,11 +142,30 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
-    public void updateOrderStatus(Integer orderId, String status) {
+    public void updateOrderStatus(Integer orderId, String amount) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+        // Check if the order is already paid
+        if (!order.getStatus().equals("PENDING")) {
+            return;
+        }
+        // Update the order status to PAID
+        String status = "PAID";
         order.setStatus(status);
         orderRepository.save(order).toVO();
+
+        // Update the stockpile
+        List<COR> cors = corRepository.findByOrderId(orderId);
+        for (COR cor : cors) {
+            Cart cart = cartRepository.findById(cor.getCartItemId())
+                    .orElseThrow(TomatoMailException::cartItemNotExist);
+            Product product = productRepository.findById(cart.getProductid())
+                    .orElseThrow(TomatoMailException::productNotExist);
+            Stockpile stockpile = stockpileRepository.findByProductId(product.getId());
+            // 释放锁定的库存
+            stockpile.setFrozen(stockpile.getFrozen() - cart.getQuantity());
+            stockpileRepository.save(stockpile);
+        }
     }
 
     public OrderVO getOrderDetails(Integer orderId) {

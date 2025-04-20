@@ -11,7 +11,7 @@ public interface OrderService {
 
     //List<OrderVO> getUserOrders(Integer userId);
 
-    void updateOrderStatus(Integer orderId, String status);
+    void updateOrderStatus(Integer orderId, String amount);
 
     OrderVO getOrderDetails(Integer orderId);
 
