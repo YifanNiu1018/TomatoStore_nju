@@ -85,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderVO createOrder(Integer userId, List<Integer> cartItemIds, String paymentMethod) {
         List<Cart> carts = cartItemIds.stream()
-                .map(cartItemId -> cartRepository.findByCartidAndUserid(cartItemId, userId))
+                .map(cartItemId -> cartRepository.findByCartitemidAndUserid(cartItemId, userId))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
