@@ -1,5 +1,7 @@
 package com.example.tomatomall.exception;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TomatoMailException extends RuntimeException {
   public TomatoMailException(String message) {
     super(message);
@@ -28,5 +30,8 @@ public class TomatoMailException extends RuntimeException {
   }
 
   public static TomatoMailException cartItemNotBelongToUser() {return new TomatoMailException("购物车商品不属于该用户");
+  }
+
+  public static TomatoMailException  advertisementNotFound() {return new TomatoMailException("广告不存在");
   }
 }

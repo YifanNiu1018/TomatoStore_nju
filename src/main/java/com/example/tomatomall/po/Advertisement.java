@@ -1,0 +1,47 @@
+package com.example.tomatomall.po;
+
+import com.example.tomatomall.vo.AdvertisementVO;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "advertisements")
+public class Advertisement {
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @Column(name = "id")
+    private Integer id;
+
+    @Column(name = "title")
+    private String title;
+
+    @Column(name = "content")
+    private String content;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "product_id")
+    private Integer productId;
+
+    @OneToOne
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    private Product product;
+
+    public AdvertisementVO toVO() {
+        AdvertisementVO advertisementVO = new AdvertisementVO();
+        advertisementVO.setId(this.id);
+        advertisementVO.setTitle(this.title);
+        advertisementVO.setContent(this.content);
+        advertisementVO.setImageUrl(this.imageUrl);
+        advertisementVO.setProductId(this.productId);
+        return advertisementVO;
+    }
+}
