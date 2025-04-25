@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElRow, ElCol, ElCard, ElRate } from 'element-plus'
+import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
 import type { ProductVO } from '@/api/product'
 import { getAllProducts  } from '@/api/product'
 import type { AdvertisementVO } from '@/api/advertise.ts'
@@ -211,7 +212,7 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255,255,255,0.15);
+    background: rgba(0,0,0,0.2);
     border: 2px solid rgba(255,255,255,0.5);
     border-radius: 50%;
     cursor: pointer;
@@ -225,7 +226,7 @@ onUnmounted(() => {
     }
 
     &:hover {
-      background: rgba(255,255,255,0.25);
+      background: rgba(0,0,0,0.3);
       border-color: rgba(255,255,255,0.8);
       transform: translateY(-50%) scale(1.1);
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
