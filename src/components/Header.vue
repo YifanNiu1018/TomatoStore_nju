@@ -31,6 +31,7 @@ const handleCommand = (command) => {
       <a href="#">待定2</a>
       <a href="#">待定3</a>
       <a href="/product-create">创建商品</a>
+      <a href="/advertise/manage">管理广告</a>
     </nav>
     <div class="right">
       <ElInput placeholder="书名/作者" class="search" size="small" />

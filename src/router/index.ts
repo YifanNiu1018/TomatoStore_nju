@@ -68,6 +68,24 @@ const router = createRouter({
           name: 'cart',
           component: Cart,
           meta: {title: '我的购物车'}
+        },
+        {
+          path: '/advertise/:id/create',
+          name: 'AdvertiseCreate',
+          component: () => import('@/views/advertise/Create.vue'),
+          meta: {title: '创建广告喵~'}
+        },
+        {
+          path: '/advertise/manage',
+          name: 'AdvertiseManage',
+          component: () => import('@/views/advertise/Manage.vue'),
+          meta: {title: '管理广告喵~'}
+        },
+        {
+          path: '/advertise/:id/update',
+          name: 'AdvertiseUpdate',
+          component: () => import('@/views/advertise/Update.vue'),
+          meta: {title: '更新广告喵~'}
         }
       ]
     }

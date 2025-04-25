@@ -118,10 +118,13 @@ const handleDelete = async () => {
         </div>
         <div v-if="role === 'admin'" class="admin-btns">
           <div class="admin-btn">
-            <button class="delete-btn" @click=handleDelete()>DELETE</button>
+            <button class="delete-btn" @click=handleDelete()>删除商品</button>
           </div>
           <div class="admin-btn">
-            <button class="delete-btn" @click="router.push(`/productlist/${productId}/update`)">UPDATE</button>
+            <button class="delete-btn" @click="router.push(`/productlist/${productId}/update`)">更新商品</button>
+          </div>
+          <div class="admin-btn">
+            <button class="delete-btn" @click="router.push(`/advertise/${productId}/create`)">创建广告</button>
           </div>
         </div>
       </div>
@@ -296,7 +299,7 @@ const handleDelete = async () => {
 
 .admin-btns {
   position: relative;
-  right:-100px;
+  right: 0px;
   top:10px;
   height: 60%;
   width: 300px;
