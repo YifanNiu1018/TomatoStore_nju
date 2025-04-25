@@ -84,7 +84,6 @@ const uploadAdImage = async () => {
   try {
     isUploading.value = true
     const res = await uploadImage(selectedFile.value)
-    alert("pic upload suc")
     adForm.imageUrl = res.data.data
   } catch (error) {
     ElMessage.error('图片上传失败')
