@@ -1,4 +1,5 @@
 import { axios } from '../utils/request'
+import type {AdvertisementVO} from "@/api/advertise.ts";
 
 export interface ProductVO {
   id?: number;
@@ -54,12 +55,30 @@ export const getStockpile = (productId: number) => {
     })
 }
 
-export const deleteProduct = (id: number) => {
-  return axios.delete(`/api/products/${id}`)
-    .then(res => {
-      return res;
-    })
-}
+export const deleteProduct = async (id: number) => {
+  try {
+    const adsRes = await axios.get<{ data: AdvertisementVO[] }>('/api/advertisements');
+    const allAds = adsRes.data.data;
+
+    const relatedAds = allAds.filter(ad => ad.productId === id);
+    await Promise.all(
+        relatedAds.map(ad =>
+            axios.delete(`/api/advertisements/${ad.id}`)
+                .catch(error => {
+                  console.error(`DELETE ${ad.id} failed:`, error);
+                  throw new Error(`Part DELETE (Ad ID: ${ad.id})`);
+                })
+        )
+    );
+
+    const productRes = await axios.delete(`/api/products/${id}`);
+    return productRes;
+
+  } catch (error) {
+    console.error('DELETE error:', error);
+    throw new Error(`DELETE error: ${error.message}`);
+  }
+};
 
 export const updateProduct = (product: ProductVO) => {
   return axios.put(`/api/products`, product)
