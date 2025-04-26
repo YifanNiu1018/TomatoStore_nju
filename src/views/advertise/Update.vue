@@ -10,7 +10,6 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const adId = ref<number>(Number(route.params.id))
 
-// 广告表单数据
 const adForm = reactive({
   id: adId.value,
   title: '',
@@ -19,7 +18,6 @@ const adForm = reactive({
   productId: ''
 })
 
-// 图片相关状态
 const imagePreview = ref('')
 const selectedFile = ref<File | null>(null)
 const formRef = ref<InstanceType<typeof ElForm> | null>(null)
@@ -128,7 +126,7 @@ const submitForm = async () => {
 
         <ElFormItem label="关联商品ID">
           <ElInput
-              v-model="adId"
+              v-model="adForm.productId"
               disabled
               placeholder="自动获取商品ID"
           />
