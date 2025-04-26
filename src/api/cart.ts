@@ -18,6 +18,15 @@ export interface CartListVO {
     totalAmount: number // 总金额
 }
 
+export interface OrderResultVO {
+    orderId: string
+    username: string
+    totalAmount: number
+    paymentMethod: string
+    createTime: string
+    status: string
+}
+
 /**
  * 获取购物车列表
  */
@@ -42,3 +51,17 @@ export const deleteCartItem = (cartItemId: number) => {
 export const updateCart = (cartItemId: number, quantity: number) => {
     return axios.patch(`/api/cart/item/${cartItemId}`, {quantity: quantity })
 }
+
+/**
+ * 提交订单
+ * @param cartItemIds 购物车商品ID列表
+ * @param paymentMethod 支付方式
+ */
+export const checkoutCart = (cartItemIds: number[], paymentMethod: string = 'ALIPAY') => {
+    return axios.patch<OrderResultVO>('/api/cart/checkout', null, {
+        params: {  // 使用 `params` 将参数转为 URL 查询字符串
+            cartItemIds: cartItemIds.join(','),  // 数组转为逗号分隔字符串
+            paymentMethod
+        }
+    }).then(res => res.data.data);
+};
