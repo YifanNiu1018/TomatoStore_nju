@@ -182,9 +182,14 @@ public class OrderServiceImpl implements OrderService {
                 aliPayConfig.getAppPrivateKey(), FORMAT, CHARSET, aliPayConfig.getAlipayPublicKey(), SIGN_TYPE);
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
         request.setNotifyUrl(aliPayConfig.getNotifyUrl());
-        request.setBizContent(
-                "\"total_amount\":\"" + order.getTotalAmount() + "\","
-                + "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"}");
+        String bizContent = "{" +
+                "\"out_trade_no\":\"" + orderId + "\"," +
+                "\"subject\":\"TomatoMall Order\"," +
+                "\"total_amount\":\"" + order.getTotalAmount() + "\"," +
+                "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"" +
+                "}";
+
+        request.setBizContent(bizContent);
         String form;
         try {
             form = alipayClient.pageExecute(request).getBody();
