@@ -9,5 +9,4 @@ public interface CORRepository extends JpaRepository<COR, Integer> {
 
     List<COR> findByOrderId(Integer orderId);
 
-    List<COR> findByCartItemId(Integer cartItemId);
 }
