@@ -137,7 +137,6 @@ const handlePayment = async () => {
 
 // 支付成功后跳转
 const handlePaymentSuccess = () => {
-  showPaymentDialog.value = false
   router.push(`/order/${currentOrderId.value}`)
 }
 onMounted(() => {

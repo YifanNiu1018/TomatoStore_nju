@@ -1,8 +1,7 @@
 <!-- src/views/order/OrderView.vue -->
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage, ElCard, ElButton, ElTag, ElTable } from 'element-plus'
-import { getOrderDetails, type OrderVO, type OrderItemVO } from '@/api/order'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { getOrderDetails } from '@/api/order'
 import { useRoute } from 'vue-router'
 import router from '@/router'
 
@@ -10,30 +9,57 @@ const route = useRoute()
 const orderId = ref(route.params.id as string)
 const orderData = ref<OrderVO | null>(null)
 const loading = ref(true)
+const paymentStatusTimer = ref<NodeJS.Timeout | null>(null)
 
-// 获取订单详情
-const fetchOrderDetails = async () => {
+// 获取订单详情（添加自动刷新）
+const fetchOrderDetails = async (showLoading = true) => {
+  if (showLoading) loading.value = true
   try {
     const data = await getOrderDetails(orderId.value)
     orderData.value = data
-  } catch (error) {
-    ElMessage.error('获取订单详情失败')
-    console.error('Error fetching order:', error)
+
+    // 如果订单已支付，停止轮询
+    if (data.status === 'COMPLETED' && paymentStatusTimer.value) {
+      clearInterval(paymentStatusTimer.value)
+      ElMessage.success('支付成功！')
+    }
   } finally {
     loading.value = false
   }
 }
 
-// 返回购物车
-const backToCart = () => {
-  router.push('/cart')
+// 开始轮询订单状态
+const startPaymentStatusPolling = () => {
+  paymentStatusTimer.value = setInterval(() => {
+    fetchOrderDetails(false)
+  }, 3000) // 每3秒检查一次
+}
+
+// 跳转到支付页面
+const handlePayment = () => {
+  const paymentWindow = window.open('', '_blank')
+
+  // 实际项目中这里应该调用API获取支付URL
+  const paymentUrl = `/api/orders/${orderId.value}/pay`
+
+  if (paymentWindow) {
+    paymentWindow.location.href = paymentUrl
+    startPaymentStatusPolling()
+  } else {
+    ElMessage.warning('请允许弹出窗口以完成支付')
+  }
 }
 
 onMounted(() => {
   fetchOrderDetails()
 })
-</script>
 
+onUnmounted(() => {
+  if (paymentStatusTimer.value) {
+    clearInterval(paymentStatusTimer.value)
+  }
+})
+</script>
 <template>
   <div class="order-container">
     <ElCard class="order-card">
@@ -108,6 +134,16 @@ onMounted(() => {
         </div>
       </div>
     </ElCard>
+    <div v-if="orderData?.status === 'PENDING'" class="payment-status">
+      <el-alert title="等待支付完成" type="warning" show-icon>
+        <template #default>
+          <p>如果已完成支付，请稍候，系统正在同步支付状态...</p>
+          <el-button type="text" @click="fetchOrderDetails(false)">
+            手动刷新
+          </el-button>
+        </template>
+      </el-alert>
+    </div>
   </div>
 </template>
 

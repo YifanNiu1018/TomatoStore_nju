@@ -40,3 +40,11 @@ export const getOrderDetails = (orderId: string) => {
     return axios.get<OrderVO>(`/api/orders/${orderId}`)
         .then(res => res.data.data)
 }
+/**
+ * 检查支付状态
+ * @param orderId 订单ID
+ */
+export const checkPaymentStatus = (orderId: string) => {
+    return axios.get<{ paid: boolean }>(`/api/orders/${orderId}/payment-status`)
+        .then(res => res.data.data)
+}
