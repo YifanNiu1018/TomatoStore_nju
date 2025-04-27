@@ -7,24 +7,29 @@ import com.example.tomatomall.service.UserService;
 import com.example.tomatomall.utils.SecurityUtil;
 import com.example.tomatomall.utils.TokenUtil;
 import com.example.tomatomall.vo.UserVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
+    final
     UserRepository userRepository;
 
-    @Autowired
+    final
     TokenUtil tokenUtil;
 
-    @Autowired
+    final
     SecurityUtil securityUtil;
+
+    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, TokenUtil tokenUtil, SecurityUtil securityUtil) {
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+        this.tokenUtil = tokenUtil;
+        this.securityUtil = securityUtil;
+    }
 
     @Override
     public String createUser(UserVO userVO) {

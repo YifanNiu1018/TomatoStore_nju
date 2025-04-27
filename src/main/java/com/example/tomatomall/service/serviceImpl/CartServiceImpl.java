@@ -11,7 +11,6 @@ import com.example.tomatomall.service.CartService;
 import com.example.tomatomall.utils.SecurityUtil;
 import com.example.tomatomall.vo.CartListVO;
 import com.example.tomatomall.vo.CartVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,17 +20,24 @@ import java.util.List;
 @Service
 public class CartServiceImpl implements CartService {
 
-    @Autowired
+    final
     ProductRepository productRepository;
 
-    @Autowired
+    final
     StockpileRepository stockpileRepository;
 
-    @Autowired
+    final
     SecurityUtil securityUtil;
 
-    @Autowired
+    final
     CartRepository cartRepository;
+
+    public CartServiceImpl(ProductRepository productRepository, StockpileRepository stockpileRepository, SecurityUtil securityUtil, CartRepository cartRepository) {
+        this.productRepository = productRepository;
+        this.stockpileRepository = stockpileRepository;
+        this.securityUtil = securityUtil;
+        this.cartRepository = cartRepository;
+    }
 
     @Override
     public CartVO addToCart(Integer productId, Integer count) {

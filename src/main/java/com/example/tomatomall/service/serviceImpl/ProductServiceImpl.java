@@ -12,7 +12,6 @@ import com.example.tomatomall.vo.ProductVO;
 import com.example.tomatomall.vo.SpecificationVO;
 import com.example.tomatomall.vo.StockpileVO;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,14 +23,17 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private SpecificationRepository specificationRepository;
+    private final SpecificationRepository specificationRepository;
 
-    @Autowired
-    private StockpileRepository stockpileRepository;
+    private final StockpileRepository stockpileRepository;
+
+    public ProductServiceImpl(ProductRepository productRepository, SpecificationRepository specificationRepository, StockpileRepository stockpileRepository) {
+        this.productRepository = productRepository;
+        this.specificationRepository = specificationRepository;
+        this.stockpileRepository = stockpileRepository;
+    }
 
     @Override
     public List<ProductVO> getAllProducts() {

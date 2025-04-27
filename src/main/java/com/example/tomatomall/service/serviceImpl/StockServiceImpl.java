@@ -9,8 +9,6 @@ import com.example.tomatomall.repository.CartRepository;
 import com.example.tomatomall.repository.ProductRepository;
 import com.example.tomatomall.repository.StockpileRepository;
 import com.example.tomatomall.service.StockService;
-import com.example.tomatomall.utils.SecurityUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,18 +17,20 @@ import java.util.List;
 @Service
 public class StockServiceImpl implements StockService {
 
-    @Autowired
-    private StockpileRepository stockpileRepository;
+    private final StockpileRepository stockpileRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private CartRepository cartRepository;
+    private final CartRepository cartRepository;
 
-    @Autowired
-    private CORRepository corRepository;
+    private final CORRepository corRepository;
 
+    public StockServiceImpl(StockpileRepository stockpileRepository, ProductRepository productRepository, CartRepository cartRepository, CORRepository corRepository) {
+        this.stockpileRepository = stockpileRepository;
+        this.productRepository = productRepository;
+        this.cartRepository = cartRepository;
+        this.corRepository = corRepository;
+    }
 
 
     @Override

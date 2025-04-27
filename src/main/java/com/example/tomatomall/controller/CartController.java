@@ -1,20 +1,14 @@
 package com.example.tomatomall.controller;
 
-import com.example.tomatomall.po.COR;
-import com.example.tomatomall.po.Product;
-import com.example.tomatomall.repository.CORRepository;
 import com.example.tomatomall.service.CartService;
 import com.example.tomatomall.service.OrderService;
-import com.example.tomatomall.service.ProductService;
 import com.example.tomatomall.utils.SecurityUtil;
 import com.example.tomatomall.vo.CartListVO;
 import com.example.tomatomall.vo.CartVO;
 import com.example.tomatomall.vo.OrderVO;
 import com.example.tomatomall.vo.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
 
@@ -22,17 +16,20 @@ import java.util.List;
 @RequestMapping("/api/cart")
 public class CartController {
 
-    @Autowired
+    final
     CartService cartService;
 
-    @Autowired
-    ProductService productService;
-
-    @Autowired
+    final
     SecurityUtil securityUtil;
 
-    @Autowired
+    final
     OrderService orderService;
+
+    public CartController(CartService cartService, SecurityUtil securityUtil, OrderService orderService) {
+        this.cartService = cartService;
+        this.securityUtil = securityUtil;
+        this.orderService = orderService;
+    }
 
     @PostMapping
     public Response<CartVO> addToCart(@RequestBody CartVO cartVO) {

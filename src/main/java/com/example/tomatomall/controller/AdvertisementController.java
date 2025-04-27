@@ -3,7 +3,6 @@ package com.example.tomatomall.controller;
 import com.example.tomatomall.service.AdvertisementService;
 import com.example.tomatomall.vo.AdvertisementVO;
 import com.example.tomatomall.vo.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,8 +11,11 @@ import java.util.List;
 @RequestMapping("/api/advertisements")
 public class AdvertisementController {
 
-    @Autowired
-    private AdvertisementService advertisementService;
+    private final AdvertisementService advertisementService;
+
+    public AdvertisementController(AdvertisementService advertisementService) {
+        this.advertisementService = advertisementService;
+    }
 
     @GetMapping
     public Response<List<AdvertisementVO>> getAllAdvertisements() {

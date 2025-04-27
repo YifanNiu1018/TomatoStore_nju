@@ -6,9 +6,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * @Author: DingXiaoyu
- * @Date: 0:17 2023/11/26
- *
  * 这个类实现了WebMvcConfigurer接口，
  * 表示会被SpringBoot接受，
  * 这个类的作用是配置拦截器。
@@ -18,8 +15,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class MyWebMvcConfig implements WebMvcConfigurer {
-    @Autowired
+    final
     LoginInterceptor loginInterceptor;
+
+    public MyWebMvcConfig(LoginInterceptor loginInterceptor) {
+        this.loginInterceptor = loginInterceptor;
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

@@ -13,8 +13,12 @@ import java.io.IOException;
 @Service
 public class ImageServiceImpl implements ImageService{
 
-    @Autowired
+    final
     OssUtil ossUtil;
+
+    public ImageServiceImpl(OssUtil ossUtil) {
+        this.ossUtil = ossUtil;
+    }
 
     @Override
     public String upload(MultipartFile file) {

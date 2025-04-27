@@ -1,6 +1,5 @@
 package com.example.tomatomall.exception;
 
-import org.jetbrains.annotations.NotNull;
 
 public class TomatoMailException extends RuntimeException {
   public TomatoMailException(String message) {

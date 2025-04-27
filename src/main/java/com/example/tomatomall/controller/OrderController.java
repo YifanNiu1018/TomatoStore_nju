@@ -8,7 +8,6 @@ import com.example.tomatomall.vo.Response;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import com.example.tomatomall.service.OrderService;
@@ -23,14 +22,18 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
-    @Autowired
-    private OrderService orderService;
+
+    private final OrderService orderService;
 
     @Value("${alipay.alipayPublicKey}")
     private String ALIPAY_PUBLIC_KEY;
 
-    @Autowired
-    private StockService stockService;;
+    private final StockService stockService;
+
+    public OrderController(OrderService orderService, StockService stockService) {
+        this.orderService = orderService;
+        this.stockService = stockService;
+    }
 
     @PostMapping("/{orderId}/pay")
     public Response<OrderItem> getProductById(@PathVariable Integer orderId) throws Exception {
@@ -60,7 +63,6 @@ public class OrderController {
         String tradeStatus = params.get("trade_status");
         if ("TRADE_SUCCESS".equals(tradeStatus)) {
             String orderId = params.get("out_trade_no"); // 您的订单号
-            String alipayTradeNo = params.get("trade_no"); // 支付宝交易号
             String amount = params.get("total_amount"); // 支付金额
 
             // 更新订单状态（注意幂等性，防止重复处理）

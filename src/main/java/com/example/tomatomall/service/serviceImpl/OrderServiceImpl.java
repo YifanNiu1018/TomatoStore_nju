@@ -9,16 +9,12 @@ import com.example.tomatomall.exception.TomatoMailException;
 import com.example.tomatomall.po.*;
 import com.example.tomatomall.repository.*;
 import com.example.tomatomall.service.OrderService;
-import com.example.tomatomall.vo.CartVO;
 import com.example.tomatomall.vo.OrderVO;
-import org.bouncycastle.jcajce.provider.asymmetric.rsa.CipherSpi;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -26,61 +22,36 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    @Autowired
-    private CartRepository cartRepository;
+    private final CartRepository cartRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private StockpileRepository stockpileRepository;
+    private final StockpileRepository stockpileRepository;
 
-    @Autowired
-    private CORRepository corRepository;
+    private final CORRepository corRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Resource
     AliPayConfig aliPayConfig;
 
-    /*@Autowired
-    private CORRepository corRepository;*/
 
     private static final String GATEWAY_URL ="https://openapi-sandbox.dl.alipaydev.com/gateway.do";
     private static final String FORMAT ="JSON";
     private static final String CHARSET ="utf-8";
     private static final String SIGN_TYPE ="RSA2";
 
-    /*@Transactional
-    public OrderVO createOrder(Integer userId, List<Integer> cartItemIds, Integer totalAmount, String paymentMethod) {
-        Order order = new Order();
-        order.setUserId(userId);
-        order.setTotalAmount(totalAmount);
-        order.setPaymentMethod(paymentMethod);
-        order.setCreateTime(LocalDateTime.now());
+    public OrderServiceImpl(OrderRepository orderRepository, CartRepository cartRepository, ProductRepository productRepository, StockpileRepository stockpileRepository, CORRepository corRepository, UserRepository userRepository) {
+        this.orderRepository = orderRepository;
+        this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
+        this.stockpileRepository = stockpileRepository;
+        this.corRepository = corRepository;
+        this.userRepository = userRepository;
+    }
 
-        Order savedOrder = orderRepository.save(order);
-
-        for (Integer cartItemId : cartItemIds) {
-            COR cor = new COR();
-            cor.setCartItemId(cartItemId);
-            cor.setOrderId(savedOrder.getOrderId());
-            corRepository.save(cor);
-        }
-
-        return savedOrder.toVO();
-    }*/
-
-    /*public List<OrderVO> getUserOrders(Integer userId) {
-        return orderRepository.findByUserId(userId)
-                .stream()
-                .map(Order::toVO)
-                .collect(Collectors.toList());
-    }*/
 
     @Override
     public OrderVO createOrder(Integer userId, List<Integer> cartItemIds, String paymentMethod) {

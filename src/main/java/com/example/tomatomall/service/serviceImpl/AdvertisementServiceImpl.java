@@ -7,10 +7,8 @@ import com.example.tomatomall.repository.AdvertisementRepository;
 import com.example.tomatomall.repository.ProductRepository;
 import com.example.tomatomall.service.AdvertisementService;
 import com.example.tomatomall.vo.AdvertisementVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,11 +16,14 @@ import java.util.stream.Collectors;
 @Service
 public class AdvertisementServiceImpl implements AdvertisementService {
 
-    @Autowired
-    private AdvertisementRepository advertisementRepository;
+    private final AdvertisementRepository advertisementRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    public AdvertisementServiceImpl(AdvertisementRepository advertisementRepository, ProductRepository productRepository) {
+        this.advertisementRepository = advertisementRepository;
+        this.productRepository = productRepository;
+    }
 
     @Override
     public List<AdvertisementVO> getAllAdvertisements() {
