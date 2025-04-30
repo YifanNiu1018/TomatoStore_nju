@@ -88,6 +88,12 @@ const router = createRouter({
           meta: {title: '更新广告喵~'}
         }
       ]
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('@/views/NotFound.vue'),
+      meta: {title: 'YOU GOT LOST!'}
     }
     // 可以继续添加其他路由...
   ]
