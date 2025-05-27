@@ -86,6 +86,12 @@ const router = createRouter({
           name: 'AdvertiseUpdate',
           component: () => import('@/views/advertise/Update.vue'),
           meta: {title: '更新广告喵~'}
+        },
+        {
+          path: '/forum',
+          name: 'Forum',
+          component: () => import('@/views/forum/Forum.vue'),
+          meta: {title: '番茄论坛喵~'}
         }
       ]
     }
