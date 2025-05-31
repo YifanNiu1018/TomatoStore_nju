@@ -5,4 +5,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LikeRecordServiceImpl implements LikeRecordService {
+    @Override
+    public String doLike(Integer commentId) {
+        return "";
+    }
 }
