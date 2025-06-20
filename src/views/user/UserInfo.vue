@@ -62,7 +62,6 @@ const uploadAvatar = async () => {
     const res = await uploadImage(selectedFile.value);
     user.avatar = res.data.data; // 更新为服务器返回的URL
     selectedFile.value = null; // 清空已上传的文件
-
     ElMessage.success('头像上传成功');
   } catch (error) {
     ElMessage.error('头像上传失败');
@@ -87,6 +86,7 @@ const updateInfo = async () => {
     });
 
     if (res.data.code === '200') {
+      sessionStorage.setItem("avatar", user.avatar);
       ElMessage.success('信息更新成功');
       fetchUserInfo(); // 刷新数据
     } else {

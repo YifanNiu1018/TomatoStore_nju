@@ -87,13 +87,19 @@ const router = createRouter({
           component: () => import('@/views/advertise/Update.vue'),
           meta: {title: '更新广告喵~'}
         },
-        {
-          path: '/forum',
-          name: 'Forum',
-          component: () => import('@/views/forum/Forum.vue'),
-          meta: {title: '番茄论坛喵~'}
-        }
+        // {
+        //   path: '/forum',
+        //   name: 'Forum',
+        //   component: () => import('@/views/forum/Forum.vue'),
+        //   meta: {title: '番茄论坛喵~'}
+        // }
       ]
+    },
+    {
+      path: '/header-test',
+      name: 'HeaderTest',
+      component: () => import('@/views/HeaderTest.vue'),
+      meta: {title: 'Header 测试页面'}
     },
     {
       path: '/:pathMatch(.*)*',
@@ -110,6 +116,7 @@ router.beforeEach((to, from, next) => {
   const token: string | null = sessionStorage.getItem('token');
   const role: string | null = sessionStorage.getItem('role')
   const username: string | null = sessionStorage.getItem('username')
+  const avatar: string | null = sessionStorage.getItem('avatar')
   const title = to.meta.title as string || '默认标题'
   document.title = title
   next()

@@ -1,9 +1,23 @@
 <script setup>
-import { ref } from "vue";
-import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElAvatar, ElInput } from "element-plus";
+import { ref, computed } from "vue";
+import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElAvatar, ElInput, ElButton, ElIcon } from "element-plus";
 import { useRouter } from "vue-router";
+import { User } from '@element-plus/icons-vue';
 
 const router = useRouter();
+const searchKeyword = ref('');
+
+// 用户信息（可以从 store 或 API 获取）
+const userInfo = ref({
+  username: sessionStorage.getItem("username") || "测试用户",
+  avatar: sessionStorage.getItem("avatar") || "", // 用户头像URL，如果为空则显示默认图标
+});
+
+// 是否已登录 - 强制显示头像用于测试
+const isLoggedIn = computed(() => {
+  return true; // 临时设为 true 以便测试头像显示
+});
+
 const handleCommand = (command) => {
   if (command === "settings") {
     router.push("/userInfo"); // 跳转到个人设置页面
@@ -15,6 +29,21 @@ const handleCommand = (command) => {
     // 这里可以添加退出登录的逻辑，比如清除token等
   }
 };
+
+// 处理头像加载错误
+const handleAvatarError = () => {
+  console.log('头像加载失败，使用默认图标');
+};
+
+// 处理搜索
+const handleSearch = () => {
+  if (searchKeyword.value.trim()) {
+    router.push({
+      path: '/search',
+      query: { keyword: searchKeyword.value }
+    });
+  }
+};
 </script>
 
 <template>
@@ -24,30 +53,57 @@ const handleCommand = (command) => {
   <div class="header">
     <div class="logo">番茄书店</div>
     <nav class="nav">
-      <a href="#">发现好书</a>
-      <a href="#">我的电子书</a>
       <a href="/productlist">番茄商城</a>
       <a href="/cart">我的购物车</a>
       <a href="/forum">番茄论坛</a>
-      <a href="#">待定3</a>
       <a href="/product-create">创建商品</a>
       <a href="/advertise/manage">管理广告</a>
     </nav>
     <div class="right">
-      <ElInput placeholder="书名/作者" class="search" size="small" />
-      <ElDropdown @command="handleCommand">
-        <ElAvatar
-          size=""
-          src=""
-          class="avatar"
-        />
-        <template #dropdown>
-          <ElDropdownMenu>
-            <ElDropdownItem command="settings">个人信息</ElDropdownItem>
-            <ElDropdownItem command="logout">退出</ElDropdownItem>
-          </ElDropdownMenu>
+      <ElInput
+        v-model="searchKeyword"
+        placeholder="搜索文章..."
+        class="search"
+        size="small"
+        @keyup.enter="handleSearch"
+      >
+        <template #append>
+          <el-button @click="handleSearch">搜索</el-button>
         </template>
-      </ElDropdown>
+      </ElInput>
+
+      <!-- 已登录状态显示用户头像 -->
+      <div v-if="isLoggedIn" class="user-section">
+        <ElDropdown @command="handleCommand">
+          <div class="user-info">
+            <ElAvatar
+              :size="40"
+              :src="userInfo.avatar"
+              class="avatar"
+              @error="handleAvatarError"
+            >
+              <el-icon><User /></el-icon>
+            </ElAvatar>
+            <span class="username">{{ userInfo.username }}</span>
+          </div>
+          <template #dropdown>
+            <ElDropdownMenu>
+              <ElDropdownItem command="settings">个人信息</ElDropdownItem>
+              <ElDropdownItem command="logout">退出</ElDropdownItem>
+            </ElDropdownMenu>
+          </template>
+        </ElDropdown>
+      </div>
+
+      <!-- 未登录状态显示登录按钮 -->
+      <div v-else class="login-section">
+        <el-button type="primary" size="small" @click="router.push('/login')">
+          登录
+        </el-button>
+        <el-button size="small" @click="router.push('/register')">
+          注册
+        </el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -104,7 +160,35 @@ const handleCommand = (command) => {
   border-radius: 30px;
 }
 
-.avatar {
-  cursor: pointer;
+.user-section {
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .avatar {
+      cursor: pointer;
+    }
+
+    .username {
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+}
+
+.login-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 </style>

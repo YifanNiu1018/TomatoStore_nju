@@ -31,12 +31,15 @@ const currentOrderId = ref('')
 const fetchCartItems = async () => {
   try {
     const data = await getCartItems()
-    cartData.value = data
-    // 默认全选
-    selectedItems.value = data.items.map(item => item.cartitemid)
+    cartData.value = data || { items: [], total: 0, totalAmount: 0 }
+    // 默认全选（只有当有商品时才选中）
+    selectedItems.value = cartData.value.items ? cartData.value.items.map(item => item.cartitemid) : []
   } catch (error) {
     ElMessage.error('获取购物车失败')
     console.error('Error fetching cart:', error)
+    // 出错时设置为空购物车状态
+    cartData.value = { items: [], total: 0, totalAmount: 0 }
+    selectedItems.value = []
   } finally {
     loading.value = false
   }
@@ -59,14 +62,30 @@ const handleUpdateQuantity = async (item: CartVO, newQuantity: number | undefine
 // 删除商品
 const handleRemoveItem = async (cartItemId: number) => {
   try {
-    await deleteCartItem(cartItemId)
-    await fetchCartItems()
-    ElMessage.success('商品已移除')
+    // 找到要删除的商品
+    const itemToRemove = cartData.value.items.find(item => item.cartitemid === cartItemId)
+
+    // 先从本地状态中移除商品，提供即时反馈
+    cartData.value.items = cartData.value.items.filter(item => item.cartitemid !== cartItemId)
+    cartData.value.total = cartData.value.items.length
+
+    // 重新计算总金额
+    cartData.value.totalAmount = cartData.value.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+
     // 从选中列表中移除
     selectedItems.value = selectedItems.value.filter(id => id !== cartItemId)
+
+    // 调用API删除
+    await deleteCartItem(cartItemId)
+    ElMessage.success('商品已移除')
+
+    // 重新获取最新数据以确保同步
+    await fetchCartItems()
   } catch (error) {
     ElMessage.error('移除商品失败')
     console.error('Error removing item:', error)
+    // 如果删除失败，重新获取数据恢复状态
+    await fetchCartItems()
   }
 }
 
@@ -149,10 +168,10 @@ onMounted(() => {
     <ElCard class="cart-card">
       <h1 class="cart-title">我的购物车 <span class="item-count">(共 {{ cartData.total==null ? 0 : cartData.total}} 件商品)</span></h1>
 
-      <div v-if="loading && cartData.total" class="loading-text">加载中...</div>
+      <div v-if="loading" class="loading-text">加载中...</div>
 
       <div v-else>
-        <div v-if="cartData.items.length === 0" class="empty-cart">
+        <div v-if="!cartData.items || cartData.items.length === 0" class="empty-cart">
           <p>购物车是空的，快去挑选商品吧~</p>
           <ElButton type="warning" @click="router.push('/productlist')">去逛逛</ElButton>
         </div>

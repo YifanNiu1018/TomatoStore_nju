@@ -6,3 +6,6 @@ export function parseRole(role: string | null) {
     return "顾客"
   }
 }
+
+// 导出原有的请求工具
+export * from './request'
