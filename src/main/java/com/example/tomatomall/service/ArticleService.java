@@ -39,4 +39,9 @@ public interface ArticleService {
      * 更新文章评论数
      */
     String updateCommentCount(String articleId, Integer commentCount);
+
+    /**
+     * 根据ID获取文章
+     */
+    ArticleVO getArticleById(String articleId);
 }

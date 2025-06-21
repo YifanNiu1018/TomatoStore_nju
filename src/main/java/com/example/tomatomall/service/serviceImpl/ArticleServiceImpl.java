@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -114,6 +115,16 @@ public class ArticleServiceImpl implements ArticleService {
      */
     private String generateArticleId() {
         return UUID.randomUUID().toString().replace("-", "").substring(0, 15);
+    }
+
+    @Override
+    public ArticleVO getArticleById(String articleId) {
+        Optional<Article> articleOptional = articleRepository.findById(articleId);
+        if (articleOptional.isPresent()) {
+            return articleOptional.get().toVO();
+        } else {
+            throw new RuntimeException("文章不存在");
+        }
     }
 
 }
