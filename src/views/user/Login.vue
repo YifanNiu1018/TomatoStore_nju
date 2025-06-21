@@ -40,6 +40,7 @@ const handleLogin = () => {
             });
             sessionStorage.setItem("username", form.username);
             sessionStorage.setItem("token", res.data.data);
+            sessionStorage.setItem("role", res.data.data.role);
             router.push({ path: "/productlist" }); // 登录成功
           } else {
             ElMessage({
