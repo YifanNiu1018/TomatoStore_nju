@@ -106,4 +106,19 @@ public class ArticleController {
             return Response.buildFailure(e.getMessage(), "400");
         }
     }
+
+    /**
+     * 根据ID获取文章
+     */
+    @GetMapping("/{articleId}")
+    public Response<ArticleVO> getArticleById(@PathVariable String articleId) {
+        try {
+            ArticleVO article = articleService.getArticleById(articleId);
+            // 自动增加阅读数
+            articleService.incrementReadCount(articleId);
+            return Response.buildSuccess(article);
+        } catch (Exception e) {
+            return Response.buildFailure(e.getMessage(), "400");
+        }
+    }
 }
