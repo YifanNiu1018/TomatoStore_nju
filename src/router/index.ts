@@ -81,6 +81,20 @@ const router = createRouter({
           component: () => import('@/views/products/SearchResults.vue'),
           meta: {title: '搜索结果'}
         },
+        // 论坛相关路由
+        {
+          path: '/forum',
+          name: 'ForumHome',
+          component: () => import('@/views/forum/ForumHome.vue'),
+          meta: {title: '番茄论坛'}
+        },
+        {
+          path: '/forum/create',
+          name: 'CreateArticle',
+          component: () => import('@/views/forum/CreateArticle.vue'),
+          meta: {title: '发表文章'}
+        },
+
         {
           path: '/advertise/:id/create',
           name: 'AdvertiseCreate',

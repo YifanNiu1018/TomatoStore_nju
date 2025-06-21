@@ -2,6 +2,7 @@
 import {ref, onMounted, computed} from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElCard, ElTag, ElRate, ElButton, ElInputNumber, ElMessageBox } from 'element-plus'
+import ProductComments from '@/components/ProductComments.vue'
 import { deleteProduct, type ProductVO, type StockpileVO, addToCart } from '@/api/product'
 import { getProductById, getStockpile } from '@/api/product'
 import router from "@/router";
@@ -213,6 +214,9 @@ const handleCreateAd = () => {
             </div>
           </div>
         </div>
+
+        <!-- 商品评论 -->
+        <ProductComments :product-id="productId" />
       </div>
     </ElCard>
   </div>

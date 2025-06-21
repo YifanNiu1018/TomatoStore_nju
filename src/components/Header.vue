@@ -53,11 +53,11 @@ const handleSearch = () => {
   <div class="header">
     <div class="logo">番茄书店</div>
     <nav class="nav">
-      <a href="/productlist">番茄商城</a>
-      <a href="/cart">我的购物车</a>
-      <a href="/forum">番茄论坛</a>
-      <a href="/product-create">创建商品</a>
-      <a href="/advertise/manage">管理广告</a>
+      <router-link to="/productlist">番茄商城</router-link>
+      <router-link to="/cart">我的购物车</router-link>
+      <router-link to="/forum">番茄论坛</router-link>
+      <router-link to="/product-create">创建商品</router-link>
+      <router-link to="/advertise/manage">管理广告</router-link>
     </nav>
     <div class="right">
       <ElInput
@@ -149,7 +149,7 @@ const handleSearch = () => {
   display: flex;
   gap: 30px;
 
-  a {
+  a, .router-link {
     color: #fff;
     text-decoration: none;
     font-size: 16px;
@@ -165,6 +165,11 @@ const handleSearch = () => {
       transform: translateY(-2px);
     }
 
+    &.router-link-active {
+      color: #ffd700;
+      background: rgba(255, 215, 0, 0.1);
+    }
+
     &:before {
       content: '';
       position: absolute;
@@ -177,7 +182,7 @@ const handleSearch = () => {
       transform: translateX(-50%);
     }
 
-    &:hover:before {
+    &:hover:before, &.router-link-active:before {
       width: 80%;
     }
   }
