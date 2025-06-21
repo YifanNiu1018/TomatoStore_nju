@@ -1,7 +1,7 @@
 <!-- src/views/product/CreateProductView.vue -->
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { ElMessage, ElForm } from 'element-plus'
+import { ElMessage, ElForm, ElCard, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElButton, ElTag, ElUpload, ElImage } from 'element-plus'
 import type { ProductVO, SpecificationVO, StockpileVO } from '@/api/product'
 import { createProduct } from '@/api/product'
 import { uploadImage } from '@/api/tools.ts'
@@ -132,117 +132,193 @@ const resetForm = () => {
 <template>
   <div class="product-create-container">
     <ElCard class="form-card">
-      <h2 class="title">创建新商品</h2>
-      <ElForm ref="formRef" :model="productForm" :rules="rules" label-width="120px">
+      <!-- 页面标题 -->
+      <h1 class="page-title">创建新商品</h1>
 
-        <ElFormItem label="商品标题" prop="title">
-          <ElInput v-model="productForm.title" placeholder="请输入商品标题" />
-        </ElFormItem>
-
-        <ElFormItem label="价格" prop="price">
-          <ElInput
-            v-model.number="productForm.price"
-            placeholder="请输入价格"
-            :formatter="value => `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/¥\s?|(,*)/g, '')"
-          />
-        </ElFormItem>
-
-        <ElFormItem label="商品描述">
-          <ElInput v-model="productForm.description" type="textarea" :rows="3" />
-        </ElFormItem>
-
-
-        <el-form-item label="商品图片" required>
-          <el-upload
-            :auto-upload="false"
-            :on-change="handleImageChange"
-            :show-file-list="false"
-          >
-            <el-image v-if="imagePreview" :src="imagePreview" class="preview-image"/>
-            <el-button type="primary">上传图片</el-button>
-          </el-upload>
-        </el-form-item>
-
-        <ElFormItem label="规格参数">
-          <div class="spec-form">
-            <ElSelect
-              v-model="newSpec.item"
-              placeholder="选择参数项"
-              style="width: 150px"
-              clearable
-            >
-              <ElOption
-                v-for="item in specItems"
-                :key="item"
-                :label="item"
-                :value="item"
-              />
-            </ElSelect>
-
-            <template v-if="newSpec.item === '出版日期'">
-              <ElDatePicker
-                v-model="newSpec.value"
-                type="date"
-                placeholder="选择日期"
-                value-format="YYYY/MM/DD"
-                style="margin-left: 10px; width: 200px"
-              />
-            </template>
-
-            <template v-else>
+      <ElForm ref="formRef" :model="productForm" :rules="rules" label-width="120px" class="product-form">
+        <!-- 基本信息区域 -->
+        <div class="form-section">
+          <h2 class="section-title">基本信息</h2>
+          <div class="section-content">
+            <ElFormItem label="商品标题" prop="title" class="form-item">
               <ElInput
-                v-model="newSpec.value"
-                :placeholder="newSpec.item === '页数' ? '请输入整数' : '请输入参数值'"
-                style="width: 200px; margin: 0 10px"
-                :type="newSpec.item === '页数' ? 'number' : 'text'"
-                :min="newSpec.item === '页数' ? 1 : null"
+                v-model="productForm.title"
+                placeholder="请输入商品标题"
+                class="form-input"
               />
-            </template>
+            </ElFormItem>
 
-            <ElButton type="primary" @click="addSpecification">添加规格</ElButton>
+            <ElFormItem label="商品价格" prop="price" class="form-item">
+              <ElInput
+                v-model.number="productForm.price"
+                placeholder="请输入价格"
+                class="form-input"
+              >
+                <template #prepend>¥</template>
+              </ElInput>
+            </ElFormItem>
+
+            <ElFormItem label="商品描述" class="form-item">
+              <ElInput
+                v-model="productForm.description"
+                type="textarea"
+                :rows="4"
+                placeholder="请输入商品描述"
+                class="form-textarea"
+              />
+            </ElFormItem>
           </div>
-          <div class="spec-list">
-            <ElTag
-              v-for="(spec, index) in specifications"
-              :key="index"
-              type="info"
-              closable
-              @close="specifications.splice(index, 1)"
-            >
-              {{ spec.item }}: {{ spec.value }}
-            </ElTag>
+        </div>
+
+        <!-- 商品图片区域 -->
+        <div class="form-section">
+          <h2 class="section-title">商品图片</h2>
+          <div class="section-content">
+            <ElFormItem label="商品图片" required class="form-item">
+              <div class="image-upload-container">
+                <ElUpload
+                  :auto-upload="false"
+                  :on-change="handleImageChange"
+                  :show-file-list="false"
+                  class="image-uploader"
+                >
+                  <div class="upload-area">
+                    <ElImage
+                      v-if="imagePreview"
+                      :src="imagePreview"
+                      class="preview-image"
+                      fit="cover"
+                    />
+                    <div v-else class="upload-placeholder">
+                      <i class="upload-icon">📷</i>
+                      <p>点击上传商品图片</p>
+                      <p class="upload-tip">支持 JPG、PNG 格式</p>
+                    </div>
+                  </div>
+                </ElUpload>
+              </div>
+            </ElFormItem>
           </div>
-        </ElFormItem>
+        </div>
 
-        <ElFormItem label="库存总量" prop="stockpile.amount">
-          <ElInput
-            v-model.number="productForm.stockpile.amount"
-            type="number"
-            placeholder="请输入正整数"
-            :min="1"
-          />
-        </ElFormItem>
+        <!-- 规格参数区域 -->
+        <div class="form-section">
+          <h2 class="section-title">规格参数</h2>
+          <div class="section-content">
+            <ElFormItem label="添加规格" class="form-item">
+              <div class="spec-form">
+                <ElSelect
+                  v-model="newSpec.item"
+                  placeholder="选择参数项"
+                  class="spec-select"
+                  clearable
+                >
+                  <ElOption
+                    v-for="item in specItems"
+                    :key="item"
+                    :label="item"
+                    :value="item"
+                  />
+                </ElSelect>
 
-        <ElFormItem label="冻结数量" prop="stockpile.frozen">
-          <ElInput
-            v-model.number="productForm.stockpile.frozen"
-            type="number"
-            placeholder="请输入非负整数"
-            :min="0"
-          />
-        </ElFormItem>
+                <template v-if="newSpec.item === '出版日期'">
+                  <ElDatePicker
+                    v-model="newSpec.value"
+                    type="date"
+                    placeholder="选择日期"
+                    value-format="YYYY/MM/DD"
+                    class="spec-input"
+                  />
+                </template>
 
-        <ElFormItem>
-          <ElButton type="primary" @click="submitForm">立即创建</ElButton>
-          <ElButton @click="resetForm">重置</ElButton>
-        </ElFormItem>
+                <template v-else>
+                  <ElInput
+                    v-model="newSpec.value"
+                    :placeholder="newSpec.item === '页数' ? '请输入整数' : '请输入参数值'"
+                    class="spec-input"
+                    :type="newSpec.item === '页数' ? 'number' : 'text'"
+                    :min="newSpec.item === '页数' ? 1 : null"
+                  />
+                </template>
+
+                <ElButton type="primary" @click="addSpecification" class="add-spec-btn">
+                  添加规格
+                </ElButton>
+              </div>
+
+              <div class="spec-list" v-if="specifications.length > 0">
+                <h3 class="spec-list-title">已添加的规格：</h3>
+                <div class="spec-tags">
+                  <ElTag
+                    v-for="(spec, index) in specifications"
+                    :key="index"
+                    type="info"
+                    closable
+                    @close="specifications.splice(index, 1)"
+                    class="spec-tag"
+                  >
+                    {{ spec.item }}: {{ spec.value }}
+                  </ElTag>
+                </div>
+              </div>
+            </ElFormItem>
+          </div>
+        </div>
+
+        <!-- 库存信息区域 -->
+        <div class="form-section">
+          <h2 class="section-title">库存信息</h2>
+          <div class="section-content">
+            <div class="stock-row">
+              <ElFormItem label="库存总量" prop="stockpile.amount" class="form-item stock-item">
+                <ElInput
+                  v-model.number="productForm.stockpile.amount"
+                  type="number"
+                  placeholder="请输入正整数"
+                  :min="1"
+                  class="form-input"
+                >
+                  <template #append>件</template>
+                </ElInput>
+              </ElFormItem>
+
+              <ElFormItem label="冻结数量" prop="stockpile.frozen" class="form-item stock-item">
+                <ElInput
+                  v-model.number="productForm.stockpile.frozen"
+                  type="number"
+                  placeholder="请输入非负整数"
+                  :min="0"
+                  class="form-input"
+                >
+                  <template #append>件</template>
+                </ElInput>
+              </ElFormItem>
+            </div>
+
+            <div class="stock-info">
+              <p class="stock-tip">
+                <span class="tip-icon">💡</span>
+                可售数量 = 库存总量 - 冻结数量 = {{ Math.max(0, (productForm.stockpile?.amount || 0) - (productForm.stockpile?.frozen || 0)) }} 件
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 操作按钮区域 -->
+        <div class="form-actions">
+          <ElButton type="primary" @click="submitForm" class="submit-btn">
+            立即创建
+          </ElButton>
+          <ElButton @click="resetForm" class="reset-btn">
+            重置表单
+          </ElButton>
+        </div>
       </ElForm>
     </ElCard>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .product-create-container {
   background: url("@/assets/bookShelve.jpg") no-repeat fixed center center;
   background-size: cover;
@@ -251,49 +327,349 @@ const resetForm = () => {
 }
 
 .form-card {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
-  background: rgba(20,20,20,0.8);
+  background: rgba(20, 20, 20, 0.7);
   border: none;
   color: #fff;
+  padding: 2rem;
 }
 
-.title {
-  text-align: center;
-  color: #fff;
+.page-title {
+  font-size: 2rem;
   margin-bottom: 2rem;
+  color: #ffd700;
+  border-bottom: 1px solid #444;
+  padding-bottom: 1rem;
+  text-align: center;
 }
 
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  background: rgba(30, 30, 30, 0.5);
+  border-radius: 8px;
+  overflow: hidden;
+
+  .section-title {
+    font-size: 1.3rem;
+    color: #ffd700;
+    margin: 0;
+    padding: 1rem 1.5rem;
+    background: rgba(40, 40, 40, 0.7);
+    border-bottom: 1px solid #444;
+  }
+
+  .section-content {
+    padding: 1.5rem;
+  }
+}
+
+.form-item {
+  margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form-input, .form-textarea {
+  :deep(.el-input__inner) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: #555;
+
+    &:focus {
+      border-color: #ffd700;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+    }
+  }
+
+  :deep(.el-input-group__prepend) {
+    background: rgba(255, 215, 0, 0.3);
+    color: #333;
+    border-color: #555;
+  }
+
+  :deep(.el-input-group__append) {
+    background: rgba(255, 215, 0, 0.3);
+    color: #333;
+    border-color: #555;
+  }
+}
+
+.form-textarea {
+  :deep(.el-textarea__inner) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: #555;
+
+    &:focus {
+      border-color: #ffd700;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+    }
+  }
+}
+
+// 图片上传样式
+.image-upload-container {
+  width: 100%;
+}
+
+.image-uploader {
+  :deep(.el-upload) {
+    border: 2px dashed #555;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+
+    &:hover {
+      border-color: #ffd700;
+    }
+  }
+}
+
+.upload-area {
+  width: 300px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(40, 40, 40, 0.5);
+}
+
+.upload-placeholder {
+  text-align: center;
+  color: #aaa;
+
+  .upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  p {
+    margin: 0.5rem 0;
+
+    &.upload-tip {
+      font-size: 0.9rem;
+      color: #666;
+    }
+  }
+}
+
+.preview-image {
+  width: 300px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+// 规格参数样式
 .spec-form {
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
-  gap: 10px;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.spec-select, .spec-input {
+  min-width: 150px;
+
+  :deep(.el-input__inner) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: #555;
+
+    &:focus {
+      border-color: #ffd700;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+    }
+  }
+}
+
+.add-spec-btn {
+  background: rgba(255, 215, 0, 0.7);
+  border: none;
+  color: #333;
+  font-weight: bold;
+
+  &:hover {
+    background: rgba(255, 215, 0, 0.5);
+  }
 }
 
 .spec-list {
+  margin-top: 1rem;
+
+  .spec-list-title {
+    color: #aaa;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .spec-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .spec-tag {
+    :deep(.el-tag) {
+      background: rgba(40, 40, 40, 0.7);
+      border-color: #555;
+      color: #fff;
+
+      .el-tag__close {
+        color: #aaa;
+
+        &:hover {
+          color: #fff;
+          background: rgba(220, 50, 0, 0.7);
+        }
+      }
+    }
+  }
+}
+
+// 库存信息样式
+.stock-row {
   display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  gap: 8px;
+  gap: 2rem;
+  margin-bottom: 1rem;
+
+  .stock-item {
+    flex: 1;
+  }
 }
 
-:deep(.el-form-item__label) {
-  color: #fff !important;
+.stock-info {
+  padding: 1rem;
+  background: rgba(40, 40, 40, 0.5);
+  border-radius: 6px;
+  border-left: 4px solid #ffd700;
+
+  .stock-tip {
+    margin: 0;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .tip-icon {
+      font-size: 1.2rem;
+    }
+  }
 }
 
-:deep(.el-input__inner),
-:deep(.el-select .el-input__inner),
-:deep(.el-textarea__inner) {
-  background: #404040 !important;
-  border-color: #555 !important;
-  color: #fff !important;
+// 操作按钮样式
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 0;
+  border-top: 1px solid #444;
+  margin-top: 1rem;
 }
 
-:deep(.el-input-number__decrease),
-:deep(.el-input-number__increase) {
-  background: #505050;
+.submit-btn {
+  background: rgba(255, 215, 0, 0.7);
+  border: none;
+  color: #333;
+  font-weight: bold;
+  padding: 0 2rem;
+  height: 40px;
+
+  &:hover {
+    background: rgba(255, 215, 0, 0.5);
+  }
+}
+
+.reset-btn {
+  background: rgba(100, 100, 100, 0.7);
+  border: none;
   color: #fff;
+  padding: 0 2rem;
+  height: 40px;
+
+  &:hover {
+    background: rgba(100, 100, 100, 0.5);
+  }
+}
+
+// 全局表单样式覆盖
+:deep(.el-form-item__label) {
+  color: #aaa !important;
+  font-weight: 500;
+}
+
+:deep(.el-select .el-input .el-select__caret) {
+  color: #aaa;
+}
+
+:deep(.el-select-dropdown) {
+  background: rgba(40, 40, 40, 0.95);
   border-color: #555;
+}
+
+:deep(.el-select-dropdown__item) {
+  color: #fff;
+
+  &:hover {
+    background: rgba(255, 215, 0, 0.2);
+  }
+
+  &.selected {
+    background: rgba(255, 215, 0, 0.3);
+    color: #333;
+  }
+}
+
+:deep(.el-date-picker) {
+  .el-input__inner {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: #555;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .form-card {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .spec-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stock-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .upload-area {
+    width: 100%;
+    height: 150px;
+  }
+
+  .preview-image {
+    width: 100%;
+    height: 150px;
+  }
 }
 </style>

@@ -62,7 +62,7 @@ const handleSearch = () => {
     <div class="right">
       <ElInput
         v-model="searchKeyword"
-        placeholder="搜索文章..."
+        placeholder="搜索商品..."
         class="search"
         size="small"
         @keyup.enter="handleSearch"
@@ -108,80 +108,165 @@ const handleSearch = () => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .header-space {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #111;
-  margin: 20px 20px;
-  color: white;
+  height: 70px;
+  background: transparent;
 }
+
 .header {
   position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #111;
-  padding: 10px 20px;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 15px 30px;
   color: white;
-  width: 98.5%;
-  z-index: 9;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
 }
 
 .logo {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
+  color: #ffd700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    text-shadow: 2px 2px 8px rgba(255, 215, 0, 0.5);
+  }
 }
 
 .nav {
   display: flex;
-  gap: 20px;
-}
+  gap: 30px;
 
-.nav a {
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-}
+  a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    position: relative;
 
-.nav a:hover {
-  color: #ff4d4f;
+    &:hover {
+      color: #ffd700;
+      background: rgba(255, 215, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: #ffd700;
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+    &:hover:before {
+      width: 80%;
+    }
+  }
 }
 
 .right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
 }
 
 .search {
-  width: 300px;
-  border-radius: 30px;
+  width: 320px;
+
+  :deep(.el-input__wrapper) {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 25px;
+    box-shadow: none;
+
+    &:hover {
+      border-color: rgba(255, 215, 0, 0.5);
+    }
+
+    &.is-focus {
+      border-color: #ffd700;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+    }
+  }
+
+  :deep(.el-input__inner) {
+    color: #fff;
+
+    &::placeholder {
+      color: #aaa;
+    }
+  }
+
+  :deep(.el-input-group__append) {
+    background: rgba(255, 215, 0, 0.7);
+    border: none;
+    border-radius: 0 25px 25px 0;
+
+    .el-button {
+      background: transparent;
+      border: none;
+      color: #333;
+      font-weight: bold;
+
+      &:hover {
+        background: rgba(255, 215, 0, 0.2);
+      }
+    }
+  }
 }
 
 .user-section {
   .user-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 20px;
-    transition: background-color 0.3s;
+    padding: 8px 16px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 215, 0, 0.3);
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 215, 0, 0.1);
+      border-color: rgba(255, 215, 0, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     .avatar {
       cursor: pointer;
+      border: 2px solid rgba(255, 215, 0, 0.5);
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: #ffd700;
+        transform: scale(1.1);
+      }
     }
 
     .username {
-      color: white;
-      font-size: 14px;
-      font-weight: 500;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
     }
   }
 }
@@ -189,6 +274,59 @@ const handleSearch = () => {
 .login-section {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+
+  .el-button {
+    border-radius: 20px;
+    font-weight: 600;
+    padding: 8px 20px;
+
+    &.el-button--primary {
+      background: rgba(255, 215, 0, 0.7);
+      border: none;
+      color: #333;
+
+      &:hover {
+        background: rgba(255, 215, 0, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+      }
+    }
+
+    &:not(.el-button--primary) {
+      background: transparent;
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      color: #ffd700;
+
+      &:hover {
+        background: rgba(255, 215, 0, 0.1);
+        border-color: #ffd700;
+        transform: translateY(-2px);
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 15px;
+  }
+
+  .logo {
+    font-size: 24px;
+  }
+
+  .nav {
+    display: none; // 在移动端隐藏导航，可以考虑添加汉堡菜单
+  }
+
+  .search {
+    width: 200px;
+  }
+
+  .user-section .user-info .username {
+    display: none; // 在移动端只显示头像
+  }
 }
 </style>

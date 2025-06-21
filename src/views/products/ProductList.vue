@@ -75,8 +75,15 @@ onUnmounted(() => {
 
 <template>
   <div class="product-container">
+    <!-- 页面标题 -->
+    <div class="page-header">
+      <h1 class="page-title">番茄书店</h1>
+      <p class="page-subtitle">发现好书，享受阅读</p>
+    </div>
+
+    <!-- 广告轮播 -->
     <div v-if="advertisements.length > 0" class="ad-carousel-container">
-      <div class="ad-badge">广告</div>
+      <div class="ad-badge">推荐</div>
 
       <div
           class="ad-carousel"
@@ -87,8 +94,8 @@ onUnmounted(() => {
             :alt="advertisements[currentAdIndex].title"
         />
         <div class="ad-info">
-          <h3 style="color: #ff4d4f">{{ advertisements[currentAdIndex].title }}</h3>
-          <p>{{ advertisements[currentAdIndex].content }}</p>
+          <h3 class="ad-title">{{ advertisements[currentAdIndex].title }}</h3>
+          <p class="ad-content">{{ advertisements[currentAdIndex].content }}</p>
         </div>
 
         <div class="carousel-control prev" @click.stop="switchAd('prev')">
@@ -97,40 +104,57 @@ onUnmounted(() => {
         <div class="carousel-control next" @click.stop="switchAd('next')">
           <el-icon :size="30"><ArrowRight /></el-icon>
         </div>
+
+        <!-- 指示器 -->
+        <div class="carousel-indicators">
+          <span
+            v-for="(ad, index) in advertisements"
+            :key="index"
+            :class="['indicator', { active: index === currentAdIndex }]"
+            @click.stop="currentAdIndex = index"
+          ></span>
+        </div>
       </div>
     </div>
 
-    <ElRow :gutter="20" class="product-grid">
-      <ElCol
-          v-for="product in products"
-          :key="product.id"
-          :xs="24" :sm="12" :md="8" :lg="6"
-          class="product-col"
-      >
-        <ElCard class="product-card" shadow="hover" @click="router.push(`/productlist/${product.id}`)">
-          <div class="product-cover">
-            <img
-                :src="product.cover || '/src/assets/loadFailed.png'"
-                :alt="product.title"
-            >
-          </div>
-
-          <div class="product-info">
-            <h3 class="product-title">{{ product.title }}</h3>
-            <div class="product-meta">
-              <ElRate
-                  v-model="product.rate"
-                  disabled
-                  :colors="['#ffd700', '#ffd700', '#ffd700']"
-                  class="product-rate"
-              />
-              <span class="product-price">¥{{ product.price }}</span>
+    <!-- 商品网格 -->
+    <div class="products-section">
+      <h2 class="section-title">精选商品</h2>
+      <ElRow :gutter="20" class="product-grid">
+        <ElCol
+            v-for="product in products"
+            :key="product.id"
+            :xs="24" :sm="12" :md="8" :lg="6"
+            class="product-col"
+        >
+          <ElCard class="product-card" shadow="hover" @click="router.push(`/productlist/${product.id}`)">
+            <div class="product-cover">
+              <img
+                  :src="product.cover || '/src/assets/loadFailed.png'"
+                  :alt="product.title"
+              >
+              <div class="product-overlay">
+                <span class="view-detail">查看详情</span>
+              </div>
             </div>
-            <p class="product-desc">{{ product.description }}</p>
-          </div>
-        </ElCard>
-      </ElCol>
-    </ElRow>
+
+            <div class="product-info">
+              <h3 class="product-title">{{ product.title }}</h3>
+              <div class="product-meta">
+                <ElRate
+                    v-model="product.rate"
+                    disabled
+                    :colors="['#ffd700', '#ffd700', '#ffd700']"
+                    class="product-rate"
+                />
+                <span class="product-price">¥{{ product.price?.toFixed(2) }}</span>
+              </div>
+              <p class="product-desc">{{ product.description }}</p>
+            </div>
+          </ElCard>
+        </ElCol>
+      </ElRow>
+    </div>
   </div>
 </template>
 
@@ -140,6 +164,26 @@ onUnmounted(() => {
   background-size: cover;
   padding: 2rem;
   min-height: 100vh;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  .page-title {
+    font-size: 3rem;
+    color: #ffd700;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+  }
+
+  .page-subtitle {
+    font-size: 1.2rem;
+    color: #aaa;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
 }
 
 .ad-carousel-container {
@@ -152,14 +196,16 @@ onUnmounted(() => {
 
   .ad-badge {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    background: rgba(255, 0, 0, 0.8);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 12px;
+    top: 15px;
+    left: 15px;
+    background: rgba(255, 215, 0, 0.9);
+    color: #333;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
     z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .ad-carousel {
@@ -187,18 +233,51 @@ onUnmounted(() => {
       padding: 2rem;
       color: white;
 
-      h3 {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
+      .ad-title {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+        color: #ffd700;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
       }
 
-      p {
-        font-size: 1rem;
+      .ad-content {
+        font-size: 1.1rem;
         opacity: 0.9;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        line-height: 1.5;
+        margin: 0;
+      }
+    }
+
+    .carousel-indicators {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 2;
+
+      .indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &.active {
+          background: #ffd700;
+          transform: scale(1.2);
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.8);
+        }
       }
     }
   }
@@ -253,11 +332,23 @@ onUnmounted(() => {
 }
 
 
+.products-section {
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .section-title {
+    font-size: 2rem;
+    color: #ffd700;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+  }
+}
+
 .product-grid {
   min-width: 100px;
   min-height: 100px;
-  max-width: 1400px;
-  margin: 0 auto;
 }
 
 .product-col {
@@ -265,43 +356,82 @@ onUnmounted(() => {
 }
 
 .product-card {
-  background: #2d2d2d;
-  border: none;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
 
   &:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 215, 0, 0.5);
+
+    .product-overlay {
+      opacity: 1;
+    }
+
+    .product-cover img {
+      transform: scale(1.05);
+    }
   }
 }
 
 .product-cover {
   height: 250px;
   overflow: hidden;
-  border-radius: 6px 6px 0 0;
+  border-radius: 12px 12px 0 0;
+  position: relative;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
+  }
 
-    &:hover {
-      transform: scale(1.05);
+  .product-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    .view-detail {
+      color: #ffd700;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border: 2px solid #ffd700;
+      border-radius: 25px;
+      background: rgba(255, 215, 0, 0.1);
+      backdrop-filter: blur(4px);
     }
   }
 }
 
 .product-info {
-  padding: 1.2rem;
+  padding: 1.5rem;
 }
 
 .product-title {
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin: 0 0 1rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #ffd700;
+  }
 }
 
 .product-meta {
@@ -309,22 +439,30 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+
+  .product-rate {
+    :deep(.el-rate__icon) {
+      font-size: 16px;
+    }
+  }
 }
 
 .product-price {
   color: #ffd700;
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .product-desc {
-  color: #888;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  color: #aaa;
+  font-size: 0.95rem;
+  line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  margin: 0;
 }
 
 :deep(.el-card__body) {

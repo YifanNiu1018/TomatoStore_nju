@@ -10,6 +10,7 @@ export interface CartVO {
     cover: string
     quantity: number
     detail?: string
+    status?: string  // 添加状态字段，用于标识商品是否在订单中
 }
 
 export interface CartListVO {
@@ -41,6 +42,15 @@ export const getCartItems = () => {
  */
 export const deleteCartItem = (cartItemId: number) => {
     return axios.delete(`/api/cart/${cartItemId}`)
+}
+
+/**
+ * 检查购物车商品是否可以删除
+ * @param cartItemId 购物车商品ID
+ */
+export const checkCartItemDeletable = (cartItemId: number) => {
+    return axios.get(`/api/cart/${cartItemId}/deletable`)
+        .then(res => res.data.data)
 }
 
 /**

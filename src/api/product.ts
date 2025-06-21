@@ -101,3 +101,52 @@ export const addToCart = (productId: number, quantity: number) => {
     quantity: quantity
   });
 };
+
+/**
+ * 搜索商品
+ * @param keyword 搜索关键词
+ * @param page 页码
+ * @param pageSize 每页数量
+ */
+export const searchProducts = async (keyword: string, page: number = 1, pageSize: number = 12) => {
+  try {
+    // 如果后端有专门的搜索接口，使用这个
+    // return axios.get('/api/products/search', {
+    //   params: { keyword, page, pageSize }
+    // });
+
+    // 如果没有专门的搜索接口，我们获取所有商品然后前端过滤
+    const response = await getAllProducts();
+    const allProducts = response.data.data || [];
+
+    // 前端搜索过滤
+    const filteredProducts = allProducts.filter((product: ProductVO) => {
+      const searchText = keyword.toLowerCase();
+      return (
+        product.title?.toLowerCase().includes(searchText) ||
+        product.description?.toLowerCase().includes(searchText) ||
+        product.specifications?.some(spec =>
+          spec.item?.toLowerCase().includes(searchText) ||
+          spec.value?.toLowerCase().includes(searchText)
+        )
+      );
+    });
+
+    // 分页处理
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedResults = filteredProducts.slice(startIndex, endIndex);
+
+    return {
+      data: {
+        data: paginatedResults,
+        total: filteredProducts.length,
+        page,
+        pageSize
+      }
+    };
+  } catch (error) {
+    console.error('搜索商品失败:', error);
+    throw error;
+  }
+};

@@ -70,6 +70,18 @@ const router = createRouter({
           meta: {title: '我的购物车'}
         },
         {
+          path: '/order/:id',
+          name: 'OrderDetail',
+          component: () => import('@/views/Order/Order.vue'),
+          meta: {title: '订单详情'}
+        },
+        {
+          path: '/search',
+          name: 'SearchResults',
+          component: () => import('@/views/products/SearchResults.vue'),
+          meta: {title: '搜索结果'}
+        },
+        {
           path: '/advertise/:id/create',
           name: 'AdvertiseCreate',
           component: () => import('@/views/advertise/Create.vue'),
@@ -94,12 +106,6 @@ const router = createRouter({
         //   meta: {title: '番茄论坛喵~'}
         // }
       ]
-    },
-    {
-      path: '/header-test',
-      name: 'HeaderTest',
-      component: () => import('@/views/HeaderTest.vue'),
-      meta: {title: 'Header 测试页面'}
     },
     {
       path: '/:pathMatch(.*)*',

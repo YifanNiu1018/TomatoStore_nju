@@ -1,7 +1,8 @@
 <!-- src/views/order/OrderView.vue -->
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { getOrderDetails } from '@/api/order'
+import { ElMessage, ElCard, ElButton, ElTag, ElTable, ElTableColumn, ElAlert } from 'element-plus'
+import { getOrderDetails, requestPayment, type OrderVO } from '@/api/order'
 import { useRoute } from 'vue-router'
 import router from '@/router'
 
@@ -23,6 +24,9 @@ const fetchOrderDetails = async (showLoading = true) => {
       clearInterval(paymentStatusTimer.value)
       ElMessage.success('支付成功！')
     }
+  } catch (error) {
+    console.error('获取订单详情失败:', error)
+    ElMessage.error('获取订单详情失败')
   } finally {
     loading.value = false
   }
@@ -36,18 +40,40 @@ const startPaymentStatusPolling = () => {
 }
 
 // 跳转到支付页面
-const handlePayment = () => {
-  const paymentWindow = window.open('', '_blank')
+const handlePayment = async () => {
+  try {
+    const result = await requestPayment(orderId.value)
+    console.log(result)
 
-  // 实际项目中这里应该调用API获取支付URL
-  const paymentUrl = `/api/orders/${orderId.value}/pay`
+    // 在新窗口打开支付表单
+    const paymentWindow = window.open('', '_blank')
+    if (paymentWindow) {
+      paymentWindow.document.write(result.paymentForm)
+      paymentWindow.document.close() // 确保文档完全写入
 
-  if (paymentWindow) {
-    paymentWindow.location.href = paymentUrl
-    startPaymentStatusPolling()
-  } else {
-    ElMessage.warning('请允许弹出窗口以完成支付')
+      // 开始轮询支付状态
+      startPaymentStatusPolling()
+
+      // 监听支付窗口关闭
+      const timer = setInterval(() => {
+        if (paymentWindow.closed) {
+          clearInterval(timer)
+          // 支付窗口关闭后刷新订单状态
+          fetchOrderDetails(false)
+        }
+      }, 500)
+    } else {
+      ElMessage.warning('请允许弹出窗口以完成支付')
+    }
+  } catch (error) {
+    ElMessage.error('发起支付失败')
+    console.error('Payment error:', error)
   }
+}
+
+// 返回购物车
+const backToCart = () => {
+  router.push('/cart')
 }
 
 onMounted(() => {
@@ -129,20 +155,20 @@ onUnmounted(() => {
         <!-- 操作按钮 -->
         <div class="order-actions">
           <ElButton type="warning" v-if="orderData.status === 'PENDING'" @click="router.push('/cart')">继续购物</ElButton>
-          <ElButton type="primary" v-if="orderData.status === 'PENDING'">立即支付</ElButton>
+          <ElButton type="primary" v-if="orderData.status === 'PENDING'" @click="handlePayment">立即支付</ElButton>
           <ElButton @click="backToCart">返回购物车</ElButton>
         </div>
       </div>
     </ElCard>
     <div v-if="orderData?.status === 'PENDING'" class="payment-status">
-      <el-alert title="等待支付完成" type="warning" show-icon>
+      <ElAlert title="等待支付完成" type="warning" show-icon>
         <template #default>
           <p>如果已完成支付，请稍候，系统正在同步支付状态...</p>
-          <el-button type="text" @click="fetchOrderDetails(false)">
+          <ElButton type="text" @click="fetchOrderDetails(false)">
             手动刷新
-          </el-button>
+          </ElButton>
         </template>
-      </el-alert>
+      </ElAlert>
     </div>
   </div>
 </template>
@@ -325,6 +351,32 @@ onUnmounted(() => {
       &:hover {
         background: rgba(0, 110, 255, 0.5);
       }
+    }
+  }
+}
+
+.payment-status {
+  max-width: 1200px;
+  margin: 2rem auto 0;
+
+  :deep(.el-alert) {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+
+    .el-alert__title {
+      color: #ffc107;
+    }
+
+    .el-alert__content {
+      color: #fff;
+
+      p {
+        margin-bottom: 1rem;
+      }
+    }
+
+    .el-alert__icon {
+      color: #ffc107;
     }
   }
 }

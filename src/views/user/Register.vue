@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
 import { userRegister } from '@/api/user.ts'
-import { ElMessage, ElForm } from 'element-plus'
+import { ElMessage, ElForm, ElCard, ElFormItem, ElInput, ElButton, ElSelect, ElOption } from 'element-plus'
 import router from '@/router'
 
 const formRef = ref<InstanceType<typeof ElForm> | null>(null) // 获取 el-form 实例
@@ -81,102 +81,378 @@ const handleRegister = () => {
 
 <template>
   <div class="register-container">
-    <el-card class="register-card">
-      <h2 class="title">用户注册</h2>
+    <div class="register-wrapper">
+      <ElCard class="register-card">
+        <!-- 标题区域 -->
+        <div class="header-section">
+          <h1 class="title">番茄书店</h1>
+          <h2 class="subtitle">用户注册</h2>
+          <p class="welcome-text">创建您的账户，开启阅读之旅</p>
+        </div>
 
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" />
-        </el-form-item>
+        <!-- 表单区域 -->
+        <ElForm ref="formRef" :model="form" :rules="rules" label-width="0" class="register-form">
+          <!-- 基本信息 -->
+          <div class="form-section">
+            <h3 class="section-title">基本信息</h3>
 
-        <el-form-item label="密码" prop="password">
-          <el-input
-            v-model="form.password"
-            type="password"
-            show-password
-            placeholder="请输入密码"
-          />
-        </el-form-item>
+            <ElFormItem prop="username" class="form-item">
+              <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                <ElInput
+                  v-model="form.username"
+                  placeholder="请输入用户名"
+                  class="form-input"
+                  size="large"
+                />
+              </div>
+            </ElFormItem>
 
-        <el-form-item label="真实姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入真实姓名" />
-        </el-form-item>
+            <ElFormItem prop="password" class="form-item">
+              <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <ElInput
+                  v-model="form.password"
+                  type="password"
+                  show-password
+                  placeholder="请输入密码"
+                  class="form-input"
+                  size="large"
+                />
+              </div>
+            </ElFormItem>
 
-        <el-form-item label="身份">
-          <el-select v-model="form.role">
-            <el-option label="普通用户" value="customer" />
-            <el-option label="管理员" value="admin" />
-          </el-select>
-        </el-form-item>
+            <ElFormItem prop="name" class="form-item">
+              <div class="input-wrapper">
+                <span class="input-icon">📝</span>
+                <ElInput
+                  v-model="form.name"
+                  placeholder="请输入真实姓名"
+                  class="form-input"
+                  size="large"
+                />
+              </div>
+            </ElFormItem>
 
-        <el-form-item label="手机号" prop="telephone">
-          <el-input v-model="form.telephone" placeholder="请输入手机号" />
-        </el-form-item>
+            <ElFormItem class="form-item">
+              <div class="input-wrapper">
+                <span class="input-icon">👥</span>
+                <ElSelect
+                  v-model="form.role"
+                  placeholder="请选择身份"
+                  class="form-select"
+                  size="large"
+                >
+                  <ElOption label="普通用户" value="customer" />
+                  <ElOption label="管理员" value="admin" />
+                </ElSelect>
+              </div>
+            </ElFormItem>
+          </div>
 
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱" />
-        </el-form-item>
+          <!-- 联系信息 -->
+          <div class="form-section">
+            <h3 class="section-title">联系信息</h3>
 
-        <el-form-item label="位置">
-          <el-input v-model="form.location" placeholder="请输入所在位置" />
-        </el-form-item>
+            <ElFormItem prop="telephone" class="form-item">
+              <div class="input-wrapper">
+                <span class="input-icon">📱</span>
+                <ElInput
+                  v-model="form.telephone"
+                  placeholder="请输入手机号"
+                  class="form-input"
+                  size="large"
+                />
+              </div>
+            </ElFormItem>
 
-        <el-form-item>
-          <el-button type="primary" @click="handleRegister" :disabled="!isFormValid" class="register-btn">
-            注册
-          </el-button>
-          <el-button type="text" @click="router.push('/login')" class="login-btn">
-            去登录
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+            <ElFormItem prop="email" class="form-item">
+              <div class="input-wrapper">
+                <span class="input-icon">📧</span>
+                <ElInput
+                  v-model="form.email"
+                  placeholder="请输入邮箱"
+                  class="form-input"
+                  size="large"
+                />
+              </div>
+            </ElFormItem>
+
+            <ElFormItem class="form-item">
+              <div class="input-wrapper">
+                <span class="input-icon">📍</span>
+                <ElInput
+                  v-model="form.location"
+                  placeholder="请输入所在位置"
+                  class="form-input"
+                  size="large"
+                />
+              </div>
+            </ElFormItem>
+          </div>
+
+          <!-- 操作按钮 -->
+          <ElFormItem class="form-item">
+            <ElButton
+              type="primary"
+              @click="handleRegister"
+              :disabled="!isFormValid"
+              class="register-btn"
+              size="large"
+            >
+              立即注册
+            </ElButton>
+          </ElFormItem>
+
+          <div class="form-footer">
+            <span class="login-text">已有账户？</span>
+            <ElButton type="text" @click="router.push('/login')" class="login-btn">
+              立即登录
+            </ElButton>
+          </div>
+        </ElForm>
+      </ElCard>
+    </div>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background: url("@/assets/bookShelve.jpg") no-repeat center center/cover;
+  padding: 2rem;
+}
+
+.register-wrapper {
+  width: 100%;
+  max-width: 550px;
 }
 
 .register-card {
-  width: 400px;
-  padding: 30px 40px 30px 10px;
-  background: rgba(0, 0, 0, 0.65);
-  border-radius: 5px;
-  color: #ffffff;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(250, 245, 245, 0.5);
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  color: #fff;
 }
 
-.title {
+.header-section {
   text-align: center;
-  color: white;
-  margin-bottom: 20px;
+  margin-bottom: 2.5rem;
+
+  .title {
+    font-size: 2.5rem;
+    color: #ffd700;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+  }
+
+  .welcome-text {
+    color: #aaa;
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.register-form {
+  .form-item {
+    margin-bottom: 1.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.form-section {
+  margin-bottom: 2rem;
+
+  .section-title {
+    font-size: 1.2rem;
+    color: #ffd700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    font-weight: 600;
+  }
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .input-icon {
+    position: absolute;
+    left: 15px;
+    font-size: 1.2rem;
+    z-index: 2;
+    opacity: 0.7;
+  }
+
+  .form-input, .form-select {
+    width: 100%;
+
+    :deep(.el-input__wrapper), :deep(.el-select__wrapper) {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 12px;
+      padding-left: 45px;
+      box-shadow: none;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: rgba(255, 215, 0, 0.5);
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      &.is-focus {
+        border-color: #ffd700;
+        box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+        background: rgba(255, 255, 255, 0.15);
+      }
+    }
+
+    :deep(.el-input__inner), :deep(.el-select__placeholder) {
+      color: #fff;
+      font-size: 1rem;
+
+      &::placeholder {
+        color: #aaa;
+      }
+    }
+
+    :deep(.el-select__placeholder) {
+      color: #aaa;
+    }
+
+    :deep(.el-select__selected-item) {
+      color: #fff;
+    }
+
+    :deep(.el-input__password) {
+      color: #aaa;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
 }
 
 .register-btn {
   width: 100%;
-  border-radius: 10px;
-  font-size: 16px;
+  height: 50px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.6));
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
   font-weight: bold;
-  transition: all 0.3s ease-in-out;
+  color: #333;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.6), rgba(255, 215, 0, 0.4));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+  }
+
+  &:disabled {
+    background: rgba(100, 100, 100, 0.5);
+    color: #666;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
 }
 
-.register-btn:disabled {
-  cursor: not-allowed;
+.form-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 215, 0, 0.2);
+
+  .login-text {
+    color: #aaa;
+    font-size: 0.95rem;
+    margin-right: 0.5rem;
+  }
+
+  .login-btn {
+    color: #ffd700;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0;
+
+    &:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+  }
 }
 
-.register-btn:hover {
-  background: #409eff;
-  transform: translateY(-2px);
-  box-shadow: 0px 5px 15px rgba(64, 158, 255, 0.4);
+// 全局表单样式覆盖
+:deep(.el-form-item__error) {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
 }
-.login-btn {
-  padding-top: 20px;
+
+:deep(.el-select-dropdown) {
+  background: rgba(40, 40, 40, 0.95);
+  border-color: #555;
+}
+
+:deep(.el-select-dropdown__item) {
+  color: #fff;
+
+  &:hover {
+    background: rgba(255, 215, 0, 0.2);
+  }
+
+  &.selected {
+    background: rgba(255, 215, 0, 0.3);
+    color: #333;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .register-container {
+    padding: 1rem;
+  }
+
+  .register-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .header-section {
+    .title {
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      font-size: 1.3rem;
+    }
+  }
+
+  .form-section {
+    margin-bottom: 1.5rem;
+  }
 }
 </style>

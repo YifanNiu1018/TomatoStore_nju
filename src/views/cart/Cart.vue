@@ -1,12 +1,13 @@
 <!-- src/views/cart/CartView.vue -->
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { ElMessage, ElCard, ElButton, ElInputNumber, ElDialog, ElForm, ElFormItem, ElSelect, ElOption } from 'element-plus'
+import { ElMessage, ElCard, ElButton, ElInputNumber, ElDialog, ElForm, ElFormItem, ElSelect, ElOption, ElMessageBox } from 'element-plus'
 import {
   getCartItems,
   deleteCartItem,
   updateCart,
   checkoutCart,
+  checkCartItemDeletable,
   type CartVO,
   type CartListVO,
   type OrderResultVO
@@ -65,15 +66,34 @@ const handleRemoveItem = async (cartItemId: number) => {
     // 找到要删除的商品
     const itemToRemove = cartData.value.items.find(item => item.cartitemid === cartItemId)
 
-    // 先从本地状态中移除商品，提供即时反馈
-    cartData.value.items = cartData.value.items.filter(item => item.cartitemid !== cartItemId)
-    cartData.value.total = cartData.value.items.length
+    if (!itemToRemove) {
+      ElMessage.error('商品不存在')
+      return
+    }
 
-    // 重新计算总金额
-    cartData.value.totalAmount = cartData.value.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    // 确认删除
+    try {
+      await ElMessageBox.confirm(
+        `确定要删除商品"${itemToRemove.title}"吗？`,
+        '确认删除',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      )
+    } catch {
+      // 用户取消删除
+      return
+    }
 
-    // 从选中列表中移除
-    selectedItems.value = selectedItems.value.filter(id => id !== cartItemId)
+    // 先检查商品是否可以删除（如果后端支持此接口）
+    try {
+      await checkCartItemDeletable(cartItemId)
+    } catch (checkError) {
+      // 如果检查接口不存在或返回错误，继续尝试删除
+      console.log('Deletable check not available or failed, proceeding with delete')
+    }
 
     // 调用API删除
     await deleteCartItem(cartItemId)
@@ -82,8 +102,32 @@ const handleRemoveItem = async (cartItemId: number) => {
     // 重新获取最新数据以确保同步
     await fetchCartItems()
   } catch (error) {
-    ElMessage.error('移除商品失败')
     console.error('Error removing item:', error)
+
+    // 检查是否是外键约束错误
+    if (error?.response?.status === 500) {
+      const errorMessage = error?.response?.data?.message || error?.message || ''
+
+      if (errorMessage.includes('foreign key constraint') ||
+          errorMessage.includes('SQLIntegrityConstraintViolationException') ||
+          errorMessage.includes('Cannot delete or update a parent row')) {
+
+        // 显示更详细的错误信息
+        await ElMessageBox.alert(
+          '该商品已在订单中，无法直接删除。\n\n可能的解决方案：\n1. 如果订单未支付，可以取消订单后再删除\n2. 如果订单已支付，请联系客服处理\n3. 您也可以直接修改商品数量',
+          '无法删除商品',
+          {
+            confirmButtonText: '我知道了',
+            type: 'warning',
+          }
+        )
+      } else {
+        ElMessage.error('移除商品失败，请稍后重试')
+      }
+    } else {
+      ElMessage.error('移除商品失败')
+    }
+
     // 如果删除失败，重新获取数据恢复状态
     await fetchCartItems()
   }
@@ -198,6 +242,13 @@ onMounted(() => {
               <div class="item-price">
                 <span class="price">¥{{ item.price.toFixed(2) }}</span>
                 <span class="quantity">x{{ item.quantity }}</span>
+              </div>
+
+              <!-- 添加状态提示 -->
+              <div class="item-status" v-if="item.status">
+                <span class="status-badge" :class="item.status">
+                  {{ item.status === 'in_order' ? '已在订单中' : '' }}
+                </span>
               </div>
             </div>
 
@@ -411,6 +462,22 @@ onMounted(() => {
       .quantity {
         color: #aaa;
         font-size: 1rem;
+      }
+    }
+
+    .item-status {
+      margin-top: 0.5rem;
+
+      .status-badge {
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+
+        &.in_order {
+          background-color: rgba(255, 193, 7, 0.2);
+          color: #ffc107;
+          border: 1px solid #ffc107;
+        }
       }
     }
   }
