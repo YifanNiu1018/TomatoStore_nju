@@ -144,6 +144,7 @@ public class ProductServiceImpl implements ProductService {
         // 初始化库存为0
         Stockpile stockpile = new Stockpile();
         stockpile.setProduct(product);
+        stockpile.setProductId(product.getId());
         stockpile.setAmount(0);
         stockpile.setFrozen(0);
         stockpileRepository.save(stockpile);
@@ -177,6 +178,7 @@ public class ProductServiceImpl implements ProductService {
                 // 如果不存在，则创建新的库存记录
                 stockpile = new Stockpile();
                 stockpile.setProduct(productOptional.get());
+                stockpile.setProductId(productId);
             }
 
             // 更新库存信息
