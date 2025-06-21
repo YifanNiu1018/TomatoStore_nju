@@ -36,4 +36,7 @@ public class TomatoMailException extends RuntimeException {
 
   public static TomatoMailException  stockPileError() {return new TomatoMailException("库存扣减失败，请重试");
   }
+
+  public static TomatoMailException  AliPayError() {return new TomatoMailException("支付失败,请重试");
+  }
 }

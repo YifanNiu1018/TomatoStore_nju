@@ -30,6 +30,10 @@ public class CommentVO {
 
     private Integer goodCount;
 
+    private Integer replyUserId;
+
+    private String  replyUserName;
+
     public Comment toPO() {
         Comment comment = new Comment();
         comment.setCommentId(this.commentId);
@@ -41,6 +45,8 @@ public class CommentVO {
         comment.setNickName(this.nickName);
         comment.setPostTime(this.postTime);
         comment.setGoodCount(this.goodCount);
+        comment.setReplyUserId(this.replyUserId);
+        comment.setReplyUserName(this.replyUserName);
         return comment;
     }
 }

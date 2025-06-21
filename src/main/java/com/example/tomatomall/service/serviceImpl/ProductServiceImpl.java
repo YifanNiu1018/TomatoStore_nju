@@ -157,19 +157,11 @@ public class ProductServiceImpl implements ProductService {
     public String deleteProduct(Integer id) {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
-            // 首先删除关联的库存信息
-            Stockpile stockpile = stockpileRepository.findByProductId(id);
-            if (stockpile != null) {
-                stockpileRepository.delete(stockpile);
-            }
-
-            // 然后删除关联的规格信息
-            List<Specification> specifications = specificationRepository.findByProductId(id);
-            specificationRepository.deleteAll(specifications);
-
-            // 最后删除产品
-            productRepository.deleteById(id);
-
+            Product product = productOptional.get();
+            
+            // 使用级联删除，减少数据库操作次数
+            productRepository.delete(product);
+            
             return "删除成功";
         } else {
             throw TomatoMailException.productNotExist();

@@ -2,6 +2,7 @@ package com.example.tomatomall.controller;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.example.tomatomall.exception.TomatoMailException;
 import com.example.tomatomall.service.StockService;
 import com.example.tomatomall.vo.OrderVO;
 import com.example.tomatomall.vo.Response;
@@ -47,36 +48,35 @@ public class OrderController {
     }
 
     @PostMapping("/api/orders/notify")
-    public void handleAlipayNotify(HttpServletRequest request, HttpServletResponse response) throws IOException, AlipayApiException {
-        // 1. 解析支付宝回调参数（通常是 application/x-www-form-urlencoded）
-        Map<String, String> params = request.getParameterMap().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue()[0]));
+    public void handleAlipayNotify(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            // 1. 解析支付宝回调参数
+            Map<String, String> params = request.getParameterMap().entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue()[0]));
 
-        // 2. 验证支付宝签名（防止伪造请求）
-        boolean signVerified = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, "UTF-8", "RSA2");
-        if (!signVerified) {
-            response.getWriter().print("fail"); // 签名验证失败，返回 fail
-            return;
+            // 2. 验证支付宝签名
+            boolean signVerified = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, "UTF-8", "RSA2");
+            if (!signVerified) {
+                response.getWriter().print("fail");
+                return;
+            }
+
+            // 3. 处理业务逻辑
+            String tradeStatus = params.get("trade_status");
+            if ("TRADE_SUCCESS".equals(tradeStatus)) {
+                String orderId = params.get("out_trade_no");
+                String amount = params.get("total_amount");
+
+                // 使用事务确保原子性
+                orderService.updateOrderStatus(Integer.parseInt(orderId), amount);
+                stockService.reduceStock(Integer.valueOf(orderId));
+            }
+
+            // 4. 返回成功
+            response.getWriter().print("success");
+        } catch (Exception e) {
+            throw TomatoMailException.AliPayError();
         }
-
-        // 3. 处理业务逻辑（更新订单、减库存等）
-        String tradeStatus = params.get("trade_status");
-        if ("TRADE_SUCCESS".equals(tradeStatus)) {
-            String orderId = params.get("out_trade_no"); // 您的订单号
-            String amount = params.get("total_amount"); // 支付金额
-
-            // 更新订单状态（注意幂等性，防止重复处理）
-            orderService.updateOrderStatus(Integer.parseInt(orderId), amount);
-
-            // 扣减库存（建议加锁或乐观锁）
-            // TODO
-            // 使用ProductService中的adjustStockpile函数来调整,可能需要重新实现这函数
-            //inventoryService.reduceStock(orderId);
-            stockService.reduceStock(Integer.valueOf(orderId));
-        }
-
-        // 4. 必须返回纯文本的 "success"（支付宝要求）
-        response.getWriter().print("success");
     }
 
     @Getter

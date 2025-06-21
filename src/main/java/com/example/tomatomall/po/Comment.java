@@ -45,6 +45,14 @@ public class Comment {
     @Column(name = "good_count")
     private Integer goodCount = 0;
 
+    @Column(name = "reply_user_id")
+    private Integer replyUserId;
+
+    @Column(name = "reply_user_name")
+    private String  replyUserName;
+
+
+
     public CommentVO toVO() {
         CommentVO commentVO = new CommentVO();
         commentVO.setCommentId(this.commentId);

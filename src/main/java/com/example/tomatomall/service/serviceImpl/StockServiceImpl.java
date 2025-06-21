@@ -42,15 +42,33 @@ public class StockServiceImpl implements StockService {
             Cart cart = cartRepository.findById(cor.getCartItemId()).get();
             Product product = productRepository.findById(cart.getProductid()).get();
             Stockpile stockpile = stockpileRepository.findByProductId(product.getId());
-            int oldVersion = stockpile.getVersion();
-            int affectedRows = stockpileRepository.reduceStockWithVersion(cart.getProductid(), cart.getQuantity(), oldVersion);
-            if (affectedRows == 0) {
+            
+            // 使用重试机制处理乐观锁冲突
+            int maxRetries = 3;
+            boolean success = false;
+            
+            for (int attempt = 0; attempt < maxRetries && !success; attempt++) {
+                int oldVersion = stockpile.getVersion();
+                int affectedRows = stockpileRepository.reduceStockWithVersion(cart.getProductid(), cart.getQuantity(), oldVersion);
+                
+                if (affectedRows > 0) {
+                    success = true;
+                    stockpile = stockpileRepository.findByProductId(product.getId()); // 重新获取最新状态
+                    cartRepository.delete(cart);
+                } else if (attempt < maxRetries - 1) {
+                    // 短暂等待后重试
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    stockpile = stockpileRepository.findByProductId(product.getId()); // 刷新版本
+                }
+            }
+            
+            if (!success) {
                 throw TomatoMailException.stockPileError();
             }
-            stockpile.setAmount(stockpile.getAmount() - cart.getQuantity());
-            stockpileRepository.save(stockpile);
-            //更新购物车
-            cartRepository.delete(cart);
         }
     }
 }
