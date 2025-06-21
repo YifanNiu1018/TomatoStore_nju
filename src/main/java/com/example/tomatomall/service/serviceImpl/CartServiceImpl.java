@@ -1,10 +1,14 @@
 package com.example.tomatomall.service.serviceImpl;
 
 import com.example.tomatomall.exception.TomatoMailException;
+import com.example.tomatomall.po.COR;
 import com.example.tomatomall.po.Cart;
+import com.example.tomatomall.po.Order;
 import com.example.tomatomall.po.Product;
 import com.example.tomatomall.po.Stockpile;
+import com.example.tomatomall.repository.CORRepository;
 import com.example.tomatomall.repository.CartRepository;
+import com.example.tomatomall.repository.OrderRepository;
 import com.example.tomatomall.repository.ProductRepository;
 import com.example.tomatomall.repository.StockpileRepository;
 import com.example.tomatomall.service.CartService;
@@ -12,6 +16,7 @@ import com.example.tomatomall.utils.SecurityUtil;
 import com.example.tomatomall.vo.CartListVO;
 import com.example.tomatomall.vo.CartVO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -32,11 +37,19 @@ public class CartServiceImpl implements CartService {
     final
     CartRepository cartRepository;
 
-    public CartServiceImpl(ProductRepository productRepository, StockpileRepository stockpileRepository, SecurityUtil securityUtil, CartRepository cartRepository) {
+    final
+    CORRepository corRepository;
+
+    final
+    OrderRepository orderRepository;
+
+    public CartServiceImpl(ProductRepository productRepository, StockpileRepository stockpileRepository, SecurityUtil securityUtil, CartRepository cartRepository, CORRepository corRepository, OrderRepository orderRepository) {
         this.productRepository = productRepository;
         this.stockpileRepository = stockpileRepository;
         this.securityUtil = securityUtil;
         this.cartRepository = cartRepository;
+        this.corRepository = corRepository;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -71,6 +84,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public String deleteFromCart(Integer cartitemid) {
         Integer userId = securityUtil.getCurrentUser().getId();
         Cart cart = cartRepository.findById(cartitemid).orElse(null);
@@ -80,6 +94,36 @@ public class CartServiceImpl implements CartService {
         if (!cart.getUserid().equals(userId)) {
             throw TomatoMailException.cartItemNotBelongToUser();
         }
+
+        // 先删除相关的COR记录（如果存在）
+        List<COR> relatedCORs = corRepository.findByCartItemId(cartitemid);
+        if (!relatedCORs.isEmpty()) {
+            // 检查关联的订单状态，如果订单已支付，不允许删除
+            for (COR cor : relatedCORs) {
+                Order order = orderRepository.findById(cor.getOrderId()).orElse(null);
+                if (order != null && "PAID".equals(order.getStatus())) {
+                    throw new RuntimeException("无法删除已支付订单中的商品");
+                }
+            }
+            // 删除COR记录
+            corRepository.deleteAll(relatedCORs);
+
+            // 释放锁定的库存
+            for (COR cor : relatedCORs) {
+                Order order = orderRepository.findById(cor.getOrderId()).orElse(null);
+                if (order != null && "PENDING".equals(order.getStatus())) {
+                    Product product = productRepository.findById(cart.getProductid()).orElse(null);
+                    if (product != null) {
+                        Stockpile stockpile = stockpileRepository.findByProductId(product.getId());
+                        if (stockpile != null) {
+                            stockpile.setFrozen(stockpile.getFrozen() - cart.getQuantity());
+                            stockpileRepository.save(stockpile);
+                        }
+                    }
+                }
+            }
+        }
+
         cartRepository.delete(cart);
         return "删除成功";
     }
