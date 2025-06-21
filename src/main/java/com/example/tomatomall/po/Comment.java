@@ -22,7 +22,7 @@ public class Comment {
 
     //父级评论ID，如果是一级评论则为0
     @Column(name = "p_comment_id")
-    private Integer pCommentId;
+    private Integer PCommentId;
 
     @Column(name = "product_id", nullable = false)
     private Integer productId;
@@ -48,7 +48,7 @@ public class Comment {
     public CommentVO toVO() {
         CommentVO commentVO = new CommentVO();
         commentVO.setCommentId(this.commentId);
-        commentVO.setPCommentId(this.pCommentId);
+        commentVO.setPCommentId(this.PCommentId);
         commentVO.setProductId(this.productId);
         commentVO.setContent(this.content);
         commentVO.setImgPath(this.imgPath);

@@ -14,7 +14,7 @@ public class CommentVO {
 
     private Integer commentId;
 
-    private Integer pCommentId;
+    private Integer PCommentId;
 
     private Integer productId;
 
@@ -33,7 +33,7 @@ public class CommentVO {
     public Comment toPO() {
         Comment comment = new Comment();
         comment.setCommentId(this.commentId);
-        comment.setPCommentId(this.pCommentId);
+        comment.setPCommentId(this.PCommentId);
         comment.setProductId(this.productId);
         comment.setContent(this.content);
         comment.setImgPath(this.imgPath);
