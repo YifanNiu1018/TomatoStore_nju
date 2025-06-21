@@ -12,7 +12,7 @@ const productId = ref<number>(Number(route.params.id))
 const product = ref<ProductVO>({} as ProductVO)
 const stockpile = ref<StockpileVO>({} as StockpileVO)
 const loading = ref(true)
-const role = 'admin'
+const role = sessionStorage.getItem('role')
 const quantity = ref(1) // 购物车数量
 const maxQuantity = computed(() => {
   const available = (stockpile.value.amount || 0) - (stockpile.value.frozen || 0)

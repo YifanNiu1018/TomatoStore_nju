@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 import { User } from '@element-plus/icons-vue';
 
 const router = useRouter();
+const role = sessionStorage.getItem("role");
 const searchKeyword = ref('');
 
 // 用户信息（可以从 store 或 API 获取）
@@ -53,11 +54,11 @@ const handleSearch = () => {
   <div class="header">
     <div class="logo">番茄书店</div>
     <nav class="nav">
-      <router-link to="/productlist">番茄商城</router-link>
-      <router-link to="/cart">我的购物车</router-link>
-      <router-link to="/forum">番茄论坛</router-link>
-      <router-link to="/product-create">创建商品</router-link>
-      <router-link to="/advertise/manage">管理广告</router-link>
+      <a href="/productlist">番茄商城</a>
+      <a href="/cart">我的购物车</a>
+      <a href="/forum">番茄论坛</a>
+      <a v-if="role === 'admin'" href="/product-create">创建商品</a>
+      <a v-if="role === 'admin'" href="/advertise/manage">管理广告</a>
     </nav>
     <div class="right">
       <ElInput
