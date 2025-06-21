@@ -5,7 +5,6 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.tomatomall.po.User;
 import com.example.tomatomall.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -14,8 +13,12 @@ import java.util.Date;
 public class TokenUtil {
     private static final long EXPIRE_TIME = 24 * 60 * 60 * 1000;
 
-    @Autowired
+    final
     UserRepository userRepository;
+
+    public TokenUtil(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public String getToken(User user) {
         Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);

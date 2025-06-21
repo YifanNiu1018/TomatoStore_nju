@@ -1,6 +1,5 @@
 package com.example.tomatomall.service.serviceImpl;
 
-import com.example.tomatomall.exception.TomatoMailException;
 import com.example.tomatomall.po.Article;
 import com.example.tomatomall.repository.ArticleRepository;
 import com.example.tomatomall.service.ArticleService;
@@ -12,10 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {

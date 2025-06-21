@@ -3,7 +3,6 @@ package com.example.tomatomall.controller;
 import com.example.tomatomall.service.CommentService;
 import com.example.tomatomall.vo.CommentVO;
 import com.example.tomatomall.vo.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,8 +12,11 @@ import java.util.Map;
 @RequestMapping("/api/comments")
 public class CommentController {
 
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
+
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
 
     /**
      * 添加评论

@@ -1,6 +1,5 @@
 package com.example.tomatomall.controller;
 
-import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.example.tomatomall.exception.TomatoMailException;
 import com.example.tomatomall.service.StockService;
@@ -15,7 +14,6 @@ import com.example.tomatomall.service.OrderService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -82,7 +80,7 @@ public class OrderController {
     @Getter
     @Setter
     @NoArgsConstructor
-    private static class OrderItem {
+    public static class OrderItem {
         private String paymentForm;
         private int orderId;
         private BigDecimal totalAmount;

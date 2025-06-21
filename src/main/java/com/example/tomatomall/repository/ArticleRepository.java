@@ -8,17 +8,12 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-
 public interface ArticleRepository extends JpaRepository<Article, String> {
 
     // 分页查询所有文章，按置顶和发布时间排序
     @Query("SELECT a FROM Article a ORDER BY a.postTime DESC")
     Page<Article> findAllOrderByTopTypeAndPostTime(Pageable pageable);
-    
-    // 根据板块ID分页查询，按置顶和发布时间排序
-    @Query("SELECT a FROM Article a WHERE a.boardId = :boardId ORDER BY a.topType DESC, a.postTime DESC")
-    Page<Article> findByBoardIdOrderByTopTypeAndPostTime(@Param("boardId") Integer boardId, Pageable pageable);
+
     
     // 增加阅读数
     @Modifying

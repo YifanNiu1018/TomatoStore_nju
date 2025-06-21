@@ -22,7 +22,7 @@ public class Stockpile {
 
     @NotNull
     @OneToOne
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id", nullable = false, insertable = false, updatable = false)
     private Product product;
 
     @NotNull

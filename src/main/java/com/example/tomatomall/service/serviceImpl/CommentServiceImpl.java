@@ -4,7 +4,6 @@ import com.example.tomatomall.po.Comment;
 import com.example.tomatomall.repository.CommentRepository;
 import com.example.tomatomall.service.CommentService;
 import com.example.tomatomall.vo.CommentVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +13,11 @@ import java.util.stream.Collectors;
 @Service
 public class CommentServiceImpl implements CommentService {
 
-    @Autowired
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
+
+    public CommentServiceImpl(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
+    }
 
     @Override
     @Transactional
