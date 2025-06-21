@@ -1,5 +1,6 @@
 package com.example.tomatomall.service.serviceImpl;
 
+import com.example.tomatomall.exception.TomatoMailException;
 import com.example.tomatomall.po.COR;
 import com.example.tomatomall.po.Cart;
 import com.example.tomatomall.po.Product;
@@ -41,6 +42,11 @@ public class StockServiceImpl implements StockService {
             Cart cart = cartRepository.findById(cor.getCartItemId()).get();
             Product product = productRepository.findById(cart.getProductid()).get();
             Stockpile stockpile = stockpileRepository.findByProductId(product.getId());
+            int oldVersion = stockpile.getVersion();
+            int affectedRows = stockpileRepository.reduceStockWithVersion(cart.getProductid(), cart.getQuantity(), oldVersion);
+            if (affectedRows == 0) {
+                throw TomatoMailException.stockPileError();
+            }
             stockpile.setAmount(stockpile.getAmount() - cart.getQuantity());
             stockpileRepository.save(stockpile);
             //更新购物车

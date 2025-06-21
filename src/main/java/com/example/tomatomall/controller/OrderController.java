@@ -70,7 +70,7 @@ public class OrderController {
 
             // 扣减库存（建议加锁或乐观锁）
             // TODO
-            // 使用ProductService中的adjustStockpile函数来调整,可能需要重新实现这函数,逻辑可能有误
+            // 使用ProductService中的adjustStockpile函数来调整,可能需要重新实现这函数
             //inventoryService.reduceStock(orderId);
             stockService.reduceStock(Integer.valueOf(orderId));
         }

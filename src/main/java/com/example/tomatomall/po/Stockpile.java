@@ -26,6 +26,10 @@ public class Stockpile {
     private Product product;
 
     @NotNull
+    @Column(name = "product_id")
+    private Integer productId;
+
+    @NotNull
     @Column(name = "amount")
     private Integer amount;
 
@@ -33,11 +37,15 @@ public class Stockpile {
     @Column(name = "frozen")
     private Integer frozen;
 
+    @Version
+    private Integer version;
+
     public StockpileVO toVO() {
         StockpileVO stockpileVO = new StockpileVO();
         stockpileVO.setId(this.id);
         stockpileVO.setProductId(this.product != null ? this.product.getId() : null);
         stockpileVO.setAmount(this.amount);
+        stockpileVO.setProductId(this.productId);
         stockpileVO.setFrozen(this.frozen);
         return stockpileVO;
     }

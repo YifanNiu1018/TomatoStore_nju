@@ -33,4 +33,7 @@ public class TomatoMailException extends RuntimeException {
 
   public static TomatoMailException  advertisementNotFound() {return new TomatoMailException("广告不存在");
   }
+
+  public static TomatoMailException  stockPileError() {return new TomatoMailException("库存扣减失败，请重试");
+  }
 }

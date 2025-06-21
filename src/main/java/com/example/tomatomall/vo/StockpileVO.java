@@ -19,6 +19,7 @@ public class StockpileVO {
         Stockpile stockpile = new Stockpile();
         stockpile.setId(this.id);
         stockpile.setProduct(product);
+        stockpile.setProductId(this.productId);
         stockpile.setAmount(this.amount);
         stockpile.setFrozen(this.frozen);
         return stockpile;
