@@ -14,6 +14,19 @@ import { uploadImage } from '@/api/tools.ts'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 
+// 权限检查
+const checkAdminPermission = () => {
+  const role = sessionStorage.getItem("role");
+  console.log('ProductUpdate页面权限检查，当前role:', role);
+
+  if (role !== 'admin') {
+    ElMessage.error('您没有权限访问此页面，请联系管理员');
+    router.push('/productlist');
+    return false;
+  }
+  return true;
+}
+
 const route = useRoute()
 const productId = ref<number>(Number(route.params.id))
 
@@ -69,7 +82,9 @@ const fetchProduct = async () => {
 }
 
 onMounted(() => {
-  fetchProduct()
+  if (checkAdminPermission()) {
+    fetchProduct()
+  }
 })
 
 const handleImageChange = (file: any) => {

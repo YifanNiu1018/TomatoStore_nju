@@ -5,8 +5,14 @@ import { useRouter } from "vue-router";
 import { User } from '@element-plus/icons-vue';
 
 const router = useRouter();
-const role = sessionStorage.getItem("role");
 const searchKeyword = ref('');
+
+// 响应式的role获取
+const role = computed(() => {
+  const userRole = sessionStorage.getItem("role");
+  console.log('当前用户role:', userRole); // 添加调试日志
+  return userRole;
+});
 
 // 用户信息（可以从 store 或 API 获取）
 const userInfo = ref({
@@ -26,6 +32,7 @@ const handleCommand = (command) => {
     console.log("执行退出逻辑");
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("username");
+    sessionStorage.removeItem("role"); // 清除role信息
     router.push("/login");
     // 这里可以添加退出登录的逻辑，比如清除token等
   }

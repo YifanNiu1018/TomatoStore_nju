@@ -1,11 +1,28 @@
 <!-- src/views/product/CreateProductView.vue -->
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElForm, ElCard, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElButton, ElTag, ElUpload, ElImage } from 'element-plus'
 import type { ProductVO, SpecificationVO, StockpileVO } from '@/api/product'
 import { createProduct } from '@/api/product'
 import { uploadImage } from '@/api/tools.ts'
 import router from '@/router'
+
+// 权限检查
+const checkAdminPermission = () => {
+  const role = sessionStorage.getItem("role");
+  console.log('CreateProduct页面权限检查，当前role:', role);
+
+  if (role !== 'admin') {
+    ElMessage.error('您没有权限访问此页面，请联系管理员');
+    router.push('/productlist');
+    return false;
+  }
+  return true;
+}
+
+onMounted(() => {
+  checkAdminPermission();
+})
 
 const specItems = [
   '作者',
@@ -611,6 +628,91 @@ const resetForm = () => {
   font-weight: 500;
 }
 
+// 修复所有输入框样式
+:deep(.el-input__wrapper) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid #555 !important;
+  box-shadow: none !important;
+
+  &:hover {
+    border-color: #ffd700 !important;
+  }
+
+  &.is-focus {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2) !important;
+  }
+}
+
+:deep(.el-input__inner) {
+  background: transparent !important;
+  color: #fff !important;
+  border: none !important;
+
+  &::placeholder {
+    color: #aaa !important;
+  }
+}
+
+:deep(.el-textarea__inner) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+  border: 1px solid #555 !important;
+
+  &:focus {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2) !important;
+  }
+
+  &::placeholder {
+    color: #aaa !important;
+  }
+}
+
+:deep(.el-select__wrapper) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid #555 !important;
+  box-shadow: none !important;
+
+  &:hover {
+    border-color: #ffd700 !important;
+  }
+
+  &.is-focused {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2) !important;
+  }
+}
+
+:deep(.el-select__selected-item) {
+  color: #fff !important;
+}
+
+:deep(.el-select__placeholder) {
+  color: #aaa !important;
+}
+
+:deep(.el-input-number__wrapper) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid #555 !important;
+  box-shadow: none !important;
+
+  &:hover {
+    border-color: #ffd700 !important;
+  }
+
+  &.is-focus {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2) !important;
+  }
+}
+
+:deep(.el-input-number__wrapper .el-input__inner) {
+  background: transparent !important;
+  color: #fff !important;
+  border: none !important;
+}
+
 :deep(.el-select .el-input .el-select__caret) {
   color: #aaa;
 }
@@ -635,9 +737,36 @@ const resetForm = () => {
 
 :deep(.el-date-picker) {
   .el-input__inner {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border-color: #555;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    border-color: #555 !important;
+  }
+}
+
+// 修复日期选择器的输入框
+:deep(.el-date-editor) {
+  .el-input__wrapper {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid #555 !important;
+
+    &:hover {
+      border-color: #ffd700 !important;
+    }
+
+    &.is-focus {
+      border-color: #ffd700 !important;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2) !important;
+    }
+  }
+
+  .el-input__inner {
+    background: transparent !important;
+    color: #fff !important;
+    border: none !important;
+
+    &::placeholder {
+      color: #aaa !important;
+    }
   }
 }
 

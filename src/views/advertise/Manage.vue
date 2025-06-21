@@ -6,6 +6,19 @@ import type { AdvertisementVO } from '@/api/advertise.ts'
 import { getAllAdvertisements, deleteAd } from '@/api/advertise.ts'
 import router from "@/router"
 
+// 权限检查
+const checkAdminPermission = () => {
+  const role = sessionStorage.getItem("role");
+  console.log('ManageAd页面权限检查，当前role:', role);
+
+  if (role !== 'admin') {
+    ElMessage.error('您没有权限访问此页面，请联系管理员');
+    router.push('/productlist');
+    return false;
+  }
+  return true;
+}
+
 const advertisements = ref<AdvertisementVO[]>([])
 
 const loadAdvertisements = async () => {
@@ -118,7 +131,9 @@ const testNavigation = () => {
 }
 
 onMounted(() => {
-  loadAdvertisements()
+  if (checkAdminPermission()) {
+    loadAdvertisements()
+  }
 })
 </script>
 

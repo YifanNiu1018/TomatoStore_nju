@@ -32,16 +32,39 @@ const handleLogin = () => {
     if (valid) {
       userLogin(form)
         .then((res) => {
+          console.log('登录响应:', res.data); // 添加调试日志
           if (res.data.code === "200") {
             ElMessage({
               message: "登录成功！",
               type: "success",
               center: true,
             });
+
+            // 保存用户信息
             sessionStorage.setItem("username", form.username);
             sessionStorage.setItem("token", res.data.data);
-            sessionStorage.setItem("role", res.data.data.role);
-            router.push({ path: "/productlist" }); // 登录成功
+
+            // 获取用户详细信息来获取role
+            userInfo(form.username)
+              .then((userRes) => {
+                console.log('用户信息响应:', userRes.data); // 添加调试日志
+                if (userRes.data.code === "200") {
+                  const userRole = userRes.data.data.role;
+                  sessionStorage.setItem("role", userRole);
+                  console.log('保存的role:', userRole); // 添加调试日志
+                  router.push({ path: "/productlist" }); // 登录成功
+                } else {
+                  // 如果获取用户信息失败，设置默认role
+                  sessionStorage.setItem("role", "customer");
+                  router.push({ path: "/productlist" });
+                }
+              })
+              .catch((error) => {
+                console.error('获取用户信息失败:', error);
+                // 设置默认role
+                sessionStorage.setItem("role", "customer");
+                router.push({ path: "/productlist" });
+              });
           } else {
             ElMessage({
               message: res.data.msg,

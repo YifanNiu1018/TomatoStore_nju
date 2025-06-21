@@ -1,10 +1,23 @@
 <!-- src/views/advertisement/CreateAdvertisementView.vue -->
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElForm, ElCard, ElFormItem, ElInput, ElButton, ElUpload, ElImage } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 import { createAd } from '@/api/advertise.ts'
 import { uploadImage } from '@/api/tools.ts'
+
+// 权限检查
+const checkAdminPermission = () => {
+  const role = sessionStorage.getItem("role");
+  console.log('CreateAd页面权限检查，当前role:', role);
+
+  if (role !== 'admin') {
+    ElMessage.error('您没有权限访问此页面，请联系管理员');
+    router.push('/productlist');
+    return false;
+  }
+  return true;
+}
 
 const router = useRouter()
 const route = useRoute()
@@ -69,6 +82,10 @@ const submitForm = async () => {
     ElMessage.error('广告创建失败：' + (error as Error).message)
   }
 }
+
+onMounted(() => {
+  checkAdminPermission();
+})
 </script>
 
 <template>
